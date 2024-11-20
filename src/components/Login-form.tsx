@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,8 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FcGoogle } from "react-icons/fc";
 
 export function LoginForm() {
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:5001/auth/google";
+  };
+
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
@@ -43,7 +47,12 @@ export function LoginForm() {
           <Button type="submit" className="w-full">
             Login
           </Button>
-          <Button variant="outline" className="w-full">
+          <Button
+            variant="outline"
+            className="w-full flex items-center justify-center"
+            onClick={handleGoogleLogin}
+          >
+            <FcGoogle className="mr-2" /> 
             Login with Google
           </Button>
         </div>
