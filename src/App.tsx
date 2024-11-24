@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Page as Login } from "./pages/Login";
-import Dashboard from "./pages/Dashboard"
+import Dashboard from "./pages/Dashboard";
 import { LoginWithEmail } from "./pages/LoginWithEmail";
 
 function App() {
