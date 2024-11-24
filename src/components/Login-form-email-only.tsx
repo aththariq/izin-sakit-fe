@@ -7,18 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { FcGoogle } from "react-icons/fc";
 import { Separator } from "@/components/ui/separator";
 
 export function LoginForm() {
   const handleGoogleLogin = () => {
     window.location.href = "http://localhost:5001/auth/google";
-  };
-
-  const handleManualLogin = () => {
-    window.location.href = "/login-email";
   };
 
   return (
@@ -42,9 +36,9 @@ export function LoginForm() {
             <span className="text-sm text-gray-500">or</span>
             <Separator className="flex-1 h-px bg-gray-300"></Separator>
           </div>
-          <Button className="w-full" onClick={handleManualLogin}>
-            Manually Login
-          </Button>
+          <Link to="/login-email" className="w-full">
+            <Button className="w-full">Manually Login</Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
