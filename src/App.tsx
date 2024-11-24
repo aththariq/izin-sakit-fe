@@ -7,6 +7,7 @@ import {
 import { Page as Login } from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import { LoginWithEmail } from "./pages/LoginWithEmail";
+import SignUp from "./pages/SignUp";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login-email" element={<LoginWithEmail />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </Router>
   );
