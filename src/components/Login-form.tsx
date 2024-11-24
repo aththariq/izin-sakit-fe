@@ -42,7 +42,12 @@ export function LoginForm() {
                 Forgot your password?
               </Link>
             </div>
-            <Input id="password" type="password" required />
+            <Input
+              id="password"
+              type="password"
+              required
+              placeholder="Input your password"
+            />
           </div>
           <Button type="submit" className="w-full">
             Login
@@ -52,7 +57,7 @@ export function LoginForm() {
             className="w-full flex items-center justify-center"
             onClick={handleGoogleLogin}
           >
-            <FcGoogle className="mr-2" /> 
+            <FcGoogle className="mr-2" />
             Login with Google
           </Button>
         </div>

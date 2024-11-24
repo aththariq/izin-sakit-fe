@@ -1,7 +1,7 @@
-import { LoginForm } from "@/components/Login-form-email-only";
+import { LoginForm } from "@/components/Login-form";
 import useAuthRedirect from "@/hooks/useAuthRedirect";
 
-export function Page() {
+export function LoginWithEmail() {
   useAuthRedirect();
 
   return (
