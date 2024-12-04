@@ -7,7 +7,7 @@ export function LoginWithEmail() {
   return (
     <div className="flex min-h-screen w-full">
       {/* Gambar di sebelah kiri */}
-      <div className="hidden md:flex w-1/2 bg-cover bg-center bg-[url(login.jpg)]">
+      <div className="hidden md:flex w-1/2 bg-cover bg-center bg-[url('/login.jpg')]">
         {/* Gambar sebagai background */}
       </div>
 
