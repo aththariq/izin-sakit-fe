@@ -7,16 +7,19 @@ function useAuthRedirect() {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5000/auth/current_user",
-          {
-            credentials: "include",
-          }
-        );
+        const BACKEND_URL =
+          process.env.NODE_ENV === "production"
+            ? "https://web-tst-backend.up.railway.app"
+            : "http://localhost:5000";
+
+        const response = await fetch(`${BACKEND_URL}/auth/current_user`, {
+          credentials: "include",
+        });
+
         if (response.ok) {
           const data = await response.json();
           if (data.user) {
-            navigate("/dashboard"); // Redirect ke dashboard jika login berhasil
+            navigate("/dashboard");
           }
         }
       } catch (error) {
