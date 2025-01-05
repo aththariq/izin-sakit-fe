@@ -60,25 +60,15 @@ const SickLeaveForm = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const onSubmit = async (data) => {
+    // Format data before sending
+    const formattedData = {
+      ...data,
+      age: String(data.age), // Pastikan age dalam bentuk string
+      startDate: format(data.startDate, 'yyyy-MM-dd'), // Format tanggal ke string
+    };
+    
     setIsLoading(true);
-    try {
-      const response = await fetch(
-        "http://localhost:3000/api/sick-leave-form",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        }
-      );
-      const result = await response.json();
-      navigate("/ai-questions", { state: { questions: result.questions } });
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    navigate("/ai-questions", { state: { formData: formattedData } });
   };
 
   return (
@@ -271,7 +261,7 @@ const SickLeaveForm = () => {
                   )}
                 />
               )}
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full bg-primer">
                 Selanjutnya
               </Button>
             </form>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Spin } from 'antd';
 import {
   Card,
   CardContent,
@@ -10,32 +11,61 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton
 
 const AIQuestionsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const questions = location.state?.questions || [];
-  const formId = location.state?.formId;
-
-  const [answers, setAnswers] = useState({}); // Initialize state for answers
-  const [loading, setLoading] = useState(true); // For loading state
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [formId, setFormId] = useState(null);
 
   useEffect(() => {
-    // Ensure we have questions data
-    if (!location.state?.questions) {
-      navigate('/');
-      return;
-    }
-    
-    const initialAnswers = location.state.questions.reduce((acc, q) => {
-      acc[q.id] = "";
-      return acc;
-    }, {});
-    
-    setAnswers(initialAnswers);
-    setLoading(false);
+    const fetchQuestions = async () => {
+      if (!location.state?.formData) {
+        navigate('/');
+        return;
+      }
+
+      try {
+        console.log("Sending form data:", location.state.formData); // Debug log
+
+        const response = await fetch(
+          "http://localhost:3000/api/sick-leave-form",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(location.state.formData),
+          }
+        );
+        const result = await response.json();
+        console.log("API Response:", result); // Debug response
+
+        if (!result.formId) {
+          throw new Error("No formId received from server");
+        }
+
+        setFormId(result.formId);
+        setQuestions(result.questions);
+        
+        // Initialize answers
+        const initialAnswers = result.questions.reduce((acc, q) => {
+          acc[q.id] = "";
+          return acc;
+        }, {});
+        setAnswers(initialAnswers);
+      } catch (error) {
+        console.error("Error fetching questions:", error);
+        alert("Terjadi kesalahan saat memuat pertanyaan");
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
   }, [location.state, navigate]);
 
   const handleAnswer = (questionId, value) => {
@@ -48,18 +78,26 @@ const AIQuestionsPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const answersArray = Object.entries(answers).map(([questionId, answer]) => ({
-      questionId,
-      answer
-    }));
+    if (!formId) {
+      console.error("No formId available");
+      alert("Error: Form ID tidak ditemukan");
+      return;
+    }
 
     try {
+      console.log("Submitting answers with formId:", formId); // Debug log
+
       const response = await fetch("http://localhost:3000/api/save-answers", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({ 
-          formId: location.state.formId, 
-          answers: answersArray 
+          formId: formId,
+          answers: Object.entries(answers).map(([questionId, answer]) => ({
+            questionId,
+            answer
+          }))
         }),
       });
 
@@ -67,10 +105,17 @@ const AIQuestionsPage = () => {
         throw new Error('Failed to save answers');
       }
 
-      navigate("/kirim");
+      const result = await response.json();
+      console.log("Save answers response:", result); // Debug log
+
+      // Navigasi dengan state yang benar
+      navigate("/result", { 
+        state: { formId },
+        replace: false // Ubah ke false agar bisa kembali
+      });
     } catch (error) {
       console.error("Error saving answers:", error);
-      alert("Terjadi kesalahan saat menyimpan jawaban");
+      alert(`Terjadi kesalahan saat menyimpan jawaban: ${error.message}`);
     }
   };
 
@@ -84,15 +129,9 @@ const AIQuestionsPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit}>
-            {loading ? (
-              <>
-                <Skeleton className="w-full h-[100px] mb-4" />
-                <Skeleton className="w-full h-[100px] mb-4" />
-                <Skeleton className="w-full h-[100px]" />
-              </>
-            ) : (
-              questions.map((question) => (
+          <Spin spinning={loading} tip="Memuat pertanyaan...">
+            <form onSubmit={handleSubmit}>
+              {questions.map((question) => (
                 <div key={question.id} className="mb-6">
                   <Label className="block mb-2">{question.text}</Label>
                   <Input
@@ -102,16 +141,16 @@ const AIQuestionsPage = () => {
                     placeholder="Ketik jawaban Anda..."
                   />
                 </div>
-              ))
-            )}
-            <Button 
-              type="submit" 
-              className="w-full mt-4"
-              disabled={!Object.keys(answers).length === questions.length}
-            >
-              Simpan
-            </Button>
-          </form>
+              ))}
+              <Button 
+                type="submit" 
+                className="w-full mt-4 bg-primer hover:bg-rose-700"
+                disabled={loading || !Object.keys(answers).length}
+              >
+                Simpan
+              </Button>
+            </form>
+          </Spin>
         </CardContent>
       </Card>
     </div>

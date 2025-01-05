@@ -8,6 +8,9 @@ import AuthProvider from "@/contexts/AuthContext";
 import RequireAuth from "@/components/RequireAuth";
 import Forms from "@/pages/Forms";
 import AIQuestionsPage from "@/pages/AIQuestionsPage";
+import Error from "@/pages/Error";
+import Result from "@/pages/ResultPage";
+
 
 const App = () => {
   return (
@@ -15,18 +18,17 @@ const App = () => {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />{" "}
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/Dashboard"
-            element={
-              <RequireAuth>
-                <Dashboard />
-              </RequireAuth>
-            }
-          />
+          <Route path="/dashboard" element={
+            <RequireAuth>
+              <Dashboard />
+            </RequireAuth>
+          } />
           <Route path="/form" element={<Forms />} />
           <Route path="/ai-questions" element={<AIQuestionsPage />} />
+          <Route path="/result" element={<Result />} /> {/* Pastikan path ini benar */}
+          <Route path="*" element={<Error />} />
         </Routes>
       </AuthProvider>
     </Router>
