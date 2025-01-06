@@ -25,9 +25,12 @@ const ResultPage = () => {
   const [email, setEmail] = useState("");
   const [loadingDownload, setLoadingDownload] = useState(false);
   const [loadingEmail, setLoadingEmail] = useState(false);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
+  const [previewImageUrl, setPreviewImageUrl] = useState("");
   const [loading, setLoading] = useState(true);
   const formId = location.state?.formId;
+
+  // Add a base URL state
+  const [baseUrl, setBaseUrl] = useState(`http://localhost:3000/api/generate-pdf/${formId}`);
 
   useEffect(() => {
     if (!formId) {
@@ -38,16 +41,13 @@ const ResultPage = () => {
 
     const loadPdfPreview = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/api/generate-pdf/${formId}?format=preview`,
-          {
-            method: "GET"
-          }
-        );
-        if (!response.ok) throw new Error("Failed to generate preview");
+        const response = await fetch(`http://localhost:3000/api/convert-pdf-to-image/${formId}`, {
+          headers: { Accept: "image/png" },
+        });
+        if (!response.ok) throw new Error("Failed to generate image");
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
-        setImagePreviewUrl(url);
+        setPreviewImageUrl(url);
       } catch (error) {
         console.error("Error loading preview:", error);
         alert("Gagal memuat preview surat");
@@ -58,55 +58,35 @@ const ResultPage = () => {
 
     loadPdfPreview();
     return () => {
-      if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
+      if (previewImageUrl) URL.revokeObjectURL(previewImageUrl);
     };
-  }, [formId, navigate]);
+  }, [formId, navigate, baseUrl]);
 
-  const handleDownloadPDF = async () => {
+  // Add a generic download handler
+  const handleDownload = async (type) => {
     setLoadingDownload(true);
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/generate-pdf/${formId}`,
-        { method: "GET" }
-      );
-      if (!response.ok) throw new Error("Gagal mengunduh PDF");
+      const url = type === 'pdf' ? baseUrl : `http://localhost:3000/api/convert-pdf-to-image/${formId}`;
+      const response = await fetch(url, { method: "GET" });
+      if (!response.ok) throw new Error(`Gagal mengunduh ${type === 'pdf' ? 'PDF' : 'gambar'}`);
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const downloadUrl = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url;
-      a.download = "Surat_Izin_Sakit.pdf";
+      a.href = downloadUrl;
+      a.download = type === 'pdf' ? "Surat_Izin_Sakit.pdf" : "Surat_Izin_Sakit.png";
       a.click();
-      window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(downloadUrl);
     } catch (error) {
-      console.error("Error downloading PDF:", error);
-      alert("Terjadi kesalahan saat mengunduh PDF");
+      console.error(`Error downloading ${type}:`, error);
+      alert(`Terjadi kesalahan saat mengunduh ${type === 'pdf' ? 'PDF' : 'gambar'}`);
     } finally {
       setLoadingDownload(false);
     }
   };
 
-  const handleDownloadImage = async () => {
-    setLoadingDownload(true);
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/generate-pdf/${formId}?format=preview`,
-        { method: "GET" }
-      );
-      if (!response.ok) throw new Error("Gagal mengunduh gambar");
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "Surat_Izin_Sakit.png";
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading image:", error);
-      alert("Terjadi kesalahan saat mengunduh gambar");
-    } finally {
-      setLoadingDownload(false);
-    }
-  };
+  // Update existing download handlers to use the generic handler
+  const handleDownloadPDF = () => handleDownload('pdf');
+  const handleDownloadImage = () => handleDownload('image');
 
   return (
     <div className="h-screen flex justify-center items-center">
@@ -121,15 +101,13 @@ const ResultPage = () => {
           {/* Preview */}
           <div className="mb-6 flex justify-center">
             <Spin spinning={loading}>
-              <div className="relative group cursor-pointer">
-                <div className="w-full max-w-[400px] aspect-[1/1.414] border border-gray-200 rounded-lg overflow-hidden">
-                  <Image
-                    src={imagePreviewUrl}
-                    alt="Preview Surat"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
+              <Image
+                src={previewImageUrl}
+                alt="Preview Surat Izin Sakit"
+                width={400}
+                preview
+                style={{ border: "1px solid #d9d9d9", borderRadius: "8px" }}
+              />
             </Spin>
           </div>
 
