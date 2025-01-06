@@ -16,8 +16,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"; // ShadCN Dropdown Menu
-import { Image, Spin } from "antd"; // Ant Design Image dan Spin
+import { Image, Spin, Button as AntButton } from "antd"; // Ant Design Image, Spin, and Button
 import { useLocation, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 const ResultPage = () => {
   const location = useLocation();
@@ -88,6 +89,50 @@ const ResultPage = () => {
   const handleDownloadPDF = () => handleDownload('pdf');
   const handleDownloadImage = () => handleDownload('image');
 
+  // Add the handleSendEmail function
+  const handleSendEmail = async () => {
+    if (!email) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please enter an email address.",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
+    setLoadingEmail(true);
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/generate-pdf/${formId}?email=${encodeURIComponent(email)}`,
+        { method: "GET" }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to send email.");
+      }
+      const data = await response.json();
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: data.message || "Email sent successfully!",
+        confirmButtonText: "Kembali ke Dashboard",
+      }).then(() => {
+        navigate("/dashboard");
+      });
+    } catch (error) {
+      console.error("Error sending email:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Failed to send email.",
+        confirmButtonText: "OK",
+      });
+    } finally {
+      setLoadingEmail(false);
+    }
+  };
+
   return (
     <div className="h-screen flex justify-center items-center">
       <Card className="w-[600px]">
@@ -139,7 +184,7 @@ const ResultPage = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <Button
-                onClick={() => {}}
+                onClick={handleSendEmail} // Update onClick to handleSendEmail
                 className="bg-primer hover:bg-rose-700"
                 disabled={loadingEmail}
               >
@@ -152,6 +197,14 @@ const ResultPage = () => {
                 )}
               </Button>
             </div>
+          </div>
+          <div className="mb-2">
+            <Button
+              onClick={() => navigate("/dashboard")}
+              className="w-full bg-slate-400 hover:bg-slate-950"
+            >
+              Kembali ke Dashboard
+            </Button>
           </div>
         </CardContent>
       </Card>
