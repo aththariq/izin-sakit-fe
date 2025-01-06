@@ -48,27 +48,43 @@ const formSchema = z.object({
   sickReason: z.string().min(1, { message: "Sick Reason is required" }),
   otherReason: z.string().optional(),
   gender: z.string().min(1, { message: "Gender is required" }),
-  age: z.string().min(1, { message: "Age is required" }),
+  age: z.number().min(1, { message: "Age is required" }), // Ensure age is a number
+  contactEmail: z.string().email({ message: "Invalid email address" }), // Added contactEmail field to schema
+  phoneNumber: z.string().min(1, { message: "Phone Number is required" }), // Added phoneNumber field to schema
 });
 
 const SickLeaveForm = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      age: '', // Initialize as empty string since input value starts as string
+    },
   });
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const onSubmit = async (data) => {
-    // Format data before sending
-    const formattedData = {
-      ...data,
-      age: String(data.age), // Pastikan age dalam bentuk string
-      startDate: format(data.startDate, 'yyyy-MM-dd'), // Format tanggal ke string
-    };
-    
-    setIsLoading(true);
-    navigate("/ai-questions", { state: { formData: formattedData } });
+    try {
+      // Format data before sending
+      const formattedData = {
+        ...data,
+        age: Number(data.age), // Ensure age is a number
+        startDate: format(data.startDate, 'yyyy-MM-dd'), // Format date as string
+      };
+      
+      console.log("Submitting data:", formattedData); // Debug log
+      
+      setIsLoading(true);
+      navigate("/ai-questions", { 
+        state: { 
+          formData: formattedData 
+        } 
+      });
+    } catch (error) {
+      console.error("Form submission error:", error);
+      alert("Error submitting form: " + error.message);
+    }
   };
 
   return (
@@ -131,6 +147,42 @@ const SickLeaveForm = () => {
                   </FormItem>
                 )}
               />
+              {/* contactEmail field */}
+              <FormField
+                name="contactEmail" // Added contactEmail field
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Kontak</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Masukkan email yang bisa dihubungi"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* phoneNumber field */}
+              <FormField
+                name="phoneNumber" // Added phoneNumber field
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nomor Telepon</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="tel"
+                        placeholder="Masukkan nomor telepon yang bisa dihubungi"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               {/* gender field */}
               <FormField
                 name="gender"
@@ -164,7 +216,12 @@ const SickLeaveForm = () => {
                   <FormItem>
                     <FormLabel>Umur</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Masukkan umur" {...field} />
+                      <Input 
+                        type="number" 
+                        placeholder="Masukkan umur"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.valueAsNumber)} // Use valueAsNumber
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -231,11 +288,11 @@ const SickLeaveForm = () => {
                         <SelectValue placeholder="Pilih alasan" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="fever">Demam</SelectItem>
+                        <SelectItem value="Demam">Demam</SelectItem>
                         <SelectItem value="flu">Flu/Pilek</SelectItem>
-                        <SelectItem value="stomachache">Sakit Perut</SelectItem>
-                        <SelectItem value="headache">Sakit Kepala</SelectItem>
-                        <SelectItem value="other">Lainnya</SelectItem>
+                        <SelectItem value="Sakit Perut">Sakit Perut</SelectItem>
+                        <SelectItem value="Sakit Kepala">Sakit Kepala</SelectItem>
+                        <SelectItem value="Penjelasan lebih lanjut">Lainnya</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

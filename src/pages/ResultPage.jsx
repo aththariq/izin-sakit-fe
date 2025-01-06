@@ -28,20 +28,31 @@ const ResultPage = () => {
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState("");
   const [loading, setLoading] = useState(true);
-  const formId = location.state?.formId;
+  const { formId, otherReason } = location.state; // Include otherReason from state
 
   // Add a base URL state
   const [baseUrl, setBaseUrl] = useState(`http://localhost:3000/api/generate-pdf/${formId}`);
 
   useEffect(() => {
+    // Check if we have the required state
+    if (!location.state?.formId) {
+      console.error("No formId provided");
+      navigate("/dashboard");
+      return;
+    }
+
     if (!formId) {
       console.error("No formId in state");
       navigate("/");
       return;
     }
 
-    const loadPdfPreview = async () => {
+    const loadPdfAndImage = async () => {
       try {
+        // Ensure PDF is generated
+        await fetch(`${baseUrl}?otherReason=${encodeURIComponent(otherReason)}`, { method: "GET" });
+        
+        // Fetch the preview image
         const response = await fetch(`http://localhost:3000/api/convert-pdf-to-image/${formId}`, {
           headers: { Accept: "image/png" },
         });
@@ -57,11 +68,11 @@ const ResultPage = () => {
       }
     };
 
-    loadPdfPreview();
+    loadPdfAndImage();
     return () => {
       if (previewImageUrl) URL.revokeObjectURL(previewImageUrl);
     };
-  }, [formId, navigate, baseUrl]);
+  }, [formId, navigate, baseUrl, otherReason, location.state]);
 
   // Add a generic download handler
   const handleDownload = async (type) => {
@@ -116,9 +127,13 @@ const ResultPage = () => {
         icon: "success",
         title: "Success",
         text: data.message || "Email sent successfully!",
+        showDenyButton: true,
         confirmButtonText: "Kembali ke Dashboard",
-      }).then(() => {
-        navigate("/dashboard");
+        denyButtonText: "Tetap di Halaman",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/dashboard");
+        }
       });
     } catch (error) {
       console.error("Error sending email:", error);

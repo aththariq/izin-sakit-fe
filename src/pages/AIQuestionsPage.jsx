@@ -23,43 +23,51 @@ const AIQuestionsPage = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       if (!location.state?.formData) {
-        navigate('/');
+        navigate('/dashboard');
         return;
       }
 
       try {
-        console.log("Sending form data:", location.state.formData); // Debug log
+        const payload = {
+          ...location.state.formData,
+          age: Number(location.state.formData.age), // Ensure age is a number
+        };
 
-        const response = await fetch(
-          "http://localhost:3000/api/sick-leave-form",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(location.state.formData),
-          }
-        );
+        console.log("Sending payload:", payload); // Debug log
+
+        const response = await fetch("http://localhost:3000/api/sick-leave-form", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to submit form');
+        }
+
         const result = await response.json();
-        console.log("API Response:", result); // Debug response
+        console.log("API Response:", result);
 
         if (!result.formId) {
           throw new Error("No formId received from server");
         }
 
         setFormId(result.formId);
-        setQuestions(result.questions);
+        setQuestions(result.questions || []);
         
         // Initialize answers
-        const initialAnswers = result.questions.reduce((acc, q) => {
+        const initialAnswers = (result.questions || []).reduce((acc, q) => {
           acc[q.id] = "";
           return acc;
         }, {});
         setAnswers(initialAnswers);
       } catch (error) {
         console.error("Error fetching questions:", error);
-        alert("Terjadi kesalahan saat memuat pertanyaan");
-        navigate('/');
+        alert(`Error: ${error.message}`);
+        navigate('/dashboard');
       } finally {
         setLoading(false);
       }

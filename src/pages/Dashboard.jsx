@@ -1,16 +1,20 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import CreateSickLeaveCard from "@/components/CreateSickLeaveCard";
 import SickLeaveListCard from "@/components/SickLeaveListCard";
 import { AuthContext } from "@/contexts/AuthContext";
+import axios from "axios";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
   const location = useLocation();
   const search = location.search;
+  const [sickLeaves, setSickLeaves] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const urlSearchParams = new URLSearchParams(search);
@@ -28,13 +32,90 @@ const Dashboard = () => {
     }
   }, [navigate, login, search]);
 
-  const sickLeaves = [
-    { date: "2023-10-01", reason: "Flu", status: "Diajukan" },
-    { date: "2023-10-05", reason: "Migrain", status: "Disetujui" },
-    { date: "2023-10-10", reason: "Demam", status: "Ditolak" },
-    { date: "2023-10-15", reason: "Sakit Kepala", status: "Diajukan" },
-    { date: "2023-10-20", reason: "Pusing", status: "Disetujui" },
-  ];
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log('No token found');
+        navigate('/login');
+        return;
+      }
+
+      // Pastikan VITE_API_URL ada
+      if (!import.meta.env.VITE_API_URL) {
+        console.error('VITE_API_URL is not defined');
+        setError('API URL is not configured');
+        return;
+      }
+
+      console.log('API URL:', import.meta.env.VITE_API_URL); // Debug URL
+      const apiUrl = `${import.meta.env.VITE_API_URL}/api/user/sick-leaves`;
+      console.log('Full API URL:', apiUrl);
+
+      const response = await axios.get(apiUrl, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Response headers:', response.headers);
+      console.log('Response type:', response.headers['content-type']);
+      console.log('Raw response:', response);
+
+      // Verifikasi tipe konten
+      const contentType = response.headers['content-type'];
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('Invalid content type:', contentType);
+        setError('Server returned invalid content type');
+        return;
+      }
+
+      const data = response.data;
+      if (Array.isArray(data)) {
+        setSickLeaves(data);
+      } else {
+        console.error('Unexpected data format:', data);
+        setError("Data format is incorrect");
+      }
+      
+      setLoading(false);
+    } catch (err) {
+      console.error("Full error details:", {
+        message: err.message,
+        response: err.response,
+        config: err.config
+      });
+      setError("Failed to load sick leave data");
+      setLoading(false);
+    }
+  };
+
+  // Add effect to refresh data periodically
+  useEffect(() => {
+    fetchDashboardData();
+    
+    // Optional: Refresh data every 30 seconds
+    const interval = setInterval(fetchDashboardData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -45,8 +126,8 @@ const Dashboard = () => {
           <h1 className="text-2xl font-bold">Welcome to Dashboard</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
             <CreateSickLeaveCard />
-            {sickLeaves.map((leave, index) => (
-              <SickLeaveListCard key={index} leave={leave} />
+            {Array.isArray(sickLeaves) && sickLeaves.map((leave) => (
+              <SickLeaveListCard key={leave._id} leave={leave} />
             ))}
           </div>
         </main>
