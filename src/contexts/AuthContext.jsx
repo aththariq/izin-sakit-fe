@@ -31,7 +31,6 @@ const AuthProvider = ({ children }) => {
     }
   }, []);
 
-
   useEffect(() => {
     const validateToken = () => {
       const token = localStorage.getItem("token");

@@ -50,10 +50,10 @@ const Login = () => {
     if (token) {
       localStorage.setItem("token", token);
       login(token);
-      // Redirect ke halaman yang diminta atau ke Dashboard tanpa case-sensitive
-      navigate(location.state?.from || "/dashboard", { replace: true });
+      // Redirect ke dashboard tanpa case-sensitive
+      navigate("/dashboard", { replace: true });
     }
-  }, [login, navigate, location.state?.from]);
+  }, [login, navigate]);
 
   const onSubmit = async (data) => {
     try {
