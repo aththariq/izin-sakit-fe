@@ -47,28 +47,15 @@ const Login = () => {
   useEffect(() => {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const token = urlSearchParams.get("token");
-    const error = urlSearchParams.get("error");
-
-    if (error) {
-      setAlertInfo({
-        type: "error",
-        message: decodeURIComponent(error),
-      });
-      return;
-    }
 
     if (token) {
       try {
         localStorage.setItem("token", token);
         login(token);
-        // Bersihkan URL dan redirect ke dashboard
         navigate("/dashboard", { replace: true });
       } catch (error) {
         console.error("Token processing error:", error);
-        setAlertInfo({
-          type: "error",
-          message: "Gagal memproses autentikasi",
-        });
+        navigate("/login");
       }
     }
   }, [login, navigate]);
