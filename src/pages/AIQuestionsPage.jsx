@@ -11,6 +11,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { getApiUrl } from "@/utils/api";
 
 const AIQuestionsPage = () => {
   const location = useLocation();
@@ -35,7 +36,7 @@ const AIQuestionsPage = () => {
 
         console.log("Sending payload:", payload); // Debug log
 
-        const response = await fetch("http://localhost:3000/api/sick-leave-form", {
+        const response = await fetch(getApiUrl("/api/sick-leave-form"), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -95,7 +96,7 @@ const AIQuestionsPage = () => {
     try {
       console.log("Submitting answers with formId:", formId); // Debug log
 
-      const response = await fetch("http://localhost:3000/api/save-answers", {
+      const response = await fetch(getApiUrl("/api/save-answers"), {
         method: "POST",
         headers: { 
           "Content-Type": "application/json"

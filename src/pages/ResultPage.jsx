@@ -19,6 +19,7 @@ import {
 import { Image, Spin, Button as AntButton } from "antd"; // Ant Design Image, Spin, and Button
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2"; // Import SweetAlert2
+import { getApiUrl } from "@/utils/api";
 
 const ResultPage = () => {
   const location = useLocation();
@@ -31,7 +32,7 @@ const ResultPage = () => {
   const { formId, otherReason } = location.state; // Include otherReason from state
 
   // Add a base URL state
-  const [baseUrl, setBaseUrl] = useState(`http://localhost:3000/api/generate-pdf/${formId}`);
+  const [baseUrl, setBaseUrl] = useState(getApiUrl(`/api/generate-pdf/${formId}`));
 
   useEffect(() => {
     // Check if we have the required state
@@ -50,10 +51,10 @@ const ResultPage = () => {
     const loadPdfAndImage = async () => {
       try {
         // Ensure PDF is generated
-        await fetch(`${baseUrl}?otherReason=${encodeURIComponent(otherReason)}`, { method: "GET" });
+        await fetch(`${getApiUrl(`/api/generate-pdf/${formId}`)}?otherReason=${encodeURIComponent(otherReason)}`, { method: "GET" });
         
         // Fetch the preview image
-        const response = await fetch(`http://localhost:3000/api/convert-pdf-to-image/${formId}`, {
+        const response = await fetch(getApiUrl(`/api/convert-pdf-to-image/${formId}`), {
           headers: { Accept: "image/png" },
         });
         if (!response.ok) throw new Error("Failed to generate image");
@@ -78,7 +79,7 @@ const ResultPage = () => {
   const handleDownload = async (type) => {
     setLoadingDownload(true);
     try {
-      const url = type === 'pdf' ? baseUrl : `http://localhost:3000/api/convert-pdf-to-image/${formId}`;
+      const url = type === 'pdf' ? getApiUrl(`/api/generate-pdf/${formId}`) : getApiUrl(`/api/convert-pdf-to-image/${formId}`);
       const response = await fetch(url, { method: "GET" });
       if (!response.ok) throw new Error(`Gagal mengunduh ${type === 'pdf' ? 'PDF' : 'gambar'}`);
       const blob = await response.blob();

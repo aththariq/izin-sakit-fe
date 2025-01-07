@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { Alert } from "antd";
+import { getApiUrl } from "@/utils/api";
 
 const schema = Yup.object().shape({
   name: Yup.string().required("Nama wajib diisi"),
@@ -46,7 +47,7 @@ const Signup = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/register",
+        getApiUrl("/register"),
         {
           username: data.name,
           email: data.email,

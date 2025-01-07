@@ -10,6 +10,7 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
+import { getApiUrl } from "@/utils/api";
 
 const schema = Yup.object().shape({
   email: Yup.string()
@@ -56,7 +57,7 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post("http://localhost:3000/login", {
+      const response = await axios.post(getApiUrl("/login"), {
         email: data.email,
         password: data.password,
       });
@@ -88,10 +89,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    // Pastikan URL sesuai dengan yang didefinisikan di backend
-    const backendUrl =
-      import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
-    window.location.href = `${backendUrl}/auth/google`;
+    window.location.href = getApiUrl("/auth/google");
   };
 
   return (
