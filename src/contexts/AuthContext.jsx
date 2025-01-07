@@ -10,10 +10,9 @@ const AuthProvider = ({ children }) => {
   const login = useCallback((token) => {
     if (token) {
       try {
-        if (handleAuthToken(token)) {
-          setIsAuthenticated(true);
-          console.log("Authentication successful");
-        }
+        handleAuthToken(token);
+        setIsAuthenticated(true);
+        console.log("Authentication successful");
       } catch (error) {
         console.error("Login error:", error);
       }
@@ -29,22 +28,17 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const validateAuth = async () => {
       try {
-        // Get token from URL or localStorage
         const params = new URLSearchParams(window.location.search);
         const urlToken = params.get("token");
         const storedToken = localStorage.getItem("token");
         
         if (urlToken) {
-          // Save new token from URL
           console.log("Found token in URL", urlToken);
-          const authToken = `Bearer ${urlToken}`;
-          localStorage.setItem("token", authToken);
-          setIsAuthenticated(true);
+          login(urlToken);
           
           // Clean URL
           window.history.replaceState({}, document.title, "/dashboard");
         } else if (storedToken) {
-          // Use existing token
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
@@ -58,7 +52,7 @@ const AuthProvider = ({ children }) => {
     };
 
     validateAuth();
-  }, []);
+  }, [login]);
 
   if (isLoading) {
     return <div>Loading...</div>;

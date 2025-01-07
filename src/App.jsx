@@ -11,7 +11,6 @@ import AIQuestionsPage from "@/pages/AIQuestionsPage";
 import Error from "@/pages/Error";
 import Result from "@/pages/ResultPage";
 
-
 const App = () => {
   return (
     <Router>

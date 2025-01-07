@@ -65,7 +65,7 @@ const Login = () => {
         password: data.password,
       });
 
-      const token = `Bearer ${response.data.token}`;
+      const token = response.data.token; // Removed 'Bearer' prefix here
       localStorage.setItem("token", token);
       login(token);
       navigate("/dashboard");

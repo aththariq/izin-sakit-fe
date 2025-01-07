@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import CreateSickLeaveCard from "@/components/CreateSickLeaveCard";
@@ -9,36 +9,10 @@ import axios from "axios";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
-  const location = useLocation();
-  const search = location.search;
+  const { isAuthenticated } = useContext(AuthContext);
   const [sickLeaves, setSickLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-
-    if (token) {
-      // Store token with Bearer prefix
-      const authToken = `Bearer ${token}`;
-      localStorage.setItem("token", authToken);
-      login(authToken);
-      
-      // Clean URL immediately
-      window.history.replaceState({}, document.title, "/dashboard");
-    } else {
-      const storedToken = localStorage.getItem("token");
-      if (!storedToken) {
-        navigate("/login");
-        return;
-      }
-    }
-
-    // Fetch data immediately after token check
-    fetchDashboardData();
-  }, [navigate, login]);
 
   const fetchDashboardData = async () => {
     try {
@@ -103,12 +77,14 @@ const Dashboard = () => {
 
   // Add effect to refresh data periodically
   useEffect(() => {
-    fetchDashboardData();
+    if (isAuthenticated) {
+      fetchDashboardData();
 
-    // Optional: Refresh data every 30 seconds
-    const interval = setInterval(fetchDashboardData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+      // Optional: Refresh data every 30 seconds
+      const interval = setInterval(fetchDashboardData, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
 
   if (loading) {
     return (

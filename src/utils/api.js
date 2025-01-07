@@ -7,7 +7,7 @@ export const getApiUrl = (path) => {
 export const handleAuthToken = (token) => {
   if (!token) return false;
   
-  // Ensure token has Bearer prefix
+  // Ensure token has Bearer prefix if needed elsewhere
   const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
   localStorage.setItem('token', authToken);
   return true;
