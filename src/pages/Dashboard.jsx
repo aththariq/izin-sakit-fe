@@ -17,20 +17,23 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const urlSearchParams = new URLSearchParams(search);
-    const token = urlSearchParams.get("token");
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
 
     if (token) {
-      localStorage.setItem("token", token);
+      // Store token and set auth state
+      localStorage.setItem("token", `Bearer ${token}`);
       login(token);
-      window.history.replaceState({}, document.title, "/dashboard");
+      
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
     } else {
       const storedToken = localStorage.getItem("token");
       if (!storedToken) {
         navigate("/login");
       }
     }
-  }, [navigate, login, search]);
+  }, [navigate, login]);
 
   const fetchDashboardData = async () => {
     try {

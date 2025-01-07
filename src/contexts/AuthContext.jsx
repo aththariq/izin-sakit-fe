@@ -1,38 +1,33 @@
-// AuthContext.js
 import React, { createContext, useState, useEffect, useCallback } from "react";
+import { handleAuthToken, clearAuthToken } from "@/utils/api";
 
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [redirectTo, setRedirectTo] = useState(null);
 
   const login = useCallback((token) => {
     if (token) {
       try {
-        localStorage.setItem("token", token);
-        console.log("Token successfully saved to localStorage:", token); // Debugging token
-        setIsAuthenticated(true);
+        if (handleAuthToken(token)) {
+          setIsAuthenticated(true);
+          console.log("Authentication successful");
+        }
       } catch (error) {
-        console.error("Error storing token:", error);
+        console.error("Login error:", error);
       }
     }
   }, []);
 
   const logout = useCallback(() => {
-    try {
-      localStorage.removeItem("token");
-      localStorage.removeItem("email"); // Tambahkan penghapusan email jika perlu
-      setIsAuthenticated(false);
-      window.location.href = "/login"; // Arahkan ke halaman login setelah logout
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
+    clearAuthToken();
+    setIsAuthenticated(false);
+    window.location.href = "/login";
   }, []);
 
   useEffect(() => {
-    const validateToken = () => {
+    const validateAuth = () => {
       const token = localStorage.getItem("token");
       if (token) {
         setIsAuthenticated(true);
@@ -43,21 +38,22 @@ const AuthProvider = ({ children }) => {
       setIsLoading(false);
     };
 
-    // Cek jika ada token di URL dan simpan ke localStorage
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    const token = urlSearchParams.get("token");
+    validateAuth();
+  }, []);
+
+  // Check URL parameters for token
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
     if (token) {
-      localStorage.setItem("token", token);
-      setIsAuthenticated(true);
-      // Redirect setelah login
-      window.location.href = redirectTo || "/dashboard"; // Ganti dengan halaman yang sesuai
-    } else {
-      validateToken();
+      login(token);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [redirectTo]);
+  }, [login]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Or your loading component
+    return <div>Loading...</div>;
   }
 
   return (
