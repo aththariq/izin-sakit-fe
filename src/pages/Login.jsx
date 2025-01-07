@@ -47,25 +47,41 @@ const Login = () => {
   useEffect(() => {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const token = urlSearchParams.get("token");
+    const error = urlSearchParams.get("error");
+
+    if (error) {
+      setAlertInfo({
+        type: "error",
+        message: decodeURIComponent(error),
+      });
+      return;
+    }
+
     if (token) {
-      localStorage.setItem("token", token);
-      login(token);
-      // Redirect ke dashboard tanpa case-sensitive
-      navigate("/dashboard", { replace: true });
+      try {
+        localStorage.setItem("token", token);
+        login(token);
+        // Bersihkan URL dan redirect ke dashboard
+        navigate("/dashboard", { replace: true });
+      } catch (error) {
+        console.error("Token processing error:", error);
+        setAlertInfo({
+          type: "error",
+          message: "Gagal memproses autentikasi",
+        });
+      }
     }
   }, [login, navigate]);
 
   const onSubmit = async (data) => {
     try {
       const apiUrl = getApiUrl("/login");
-      console.log("Submitting to:", apiUrl); // Debug log
-
       const response = await axios.post(apiUrl, {
         email: data.email,
         password: data.password,
       });
 
-      const token = response.data.token; // Removed 'Bearer' prefix here
+      const token = response.data.token;
       localStorage.setItem("token", token);
       login(token);
       navigate("/dashboard");
@@ -79,10 +95,13 @@ const Login = () => {
     }
   };
 
+  // Perbaikan fungsi login Google
   const handleGoogleLogin = () => {
-    // Gunakan getApiUrl untuk mendapatkan URL yang benar
     const apiUrl = getApiUrl("/auth/google");
     console.log("Redirecting to Google OAuth:", apiUrl);
+    // Simpan current URL sebagai redirect_uri
+    const currentUrl = window.location.href;
+    localStorage.setItem("redirectUri", currentUrl);
     window.location.href = apiUrl;
   };
 
