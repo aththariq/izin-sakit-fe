@@ -35,7 +35,8 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
+      const bearerToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+      if (!bearerToken) {
         console.log("No token found");
         navigate("/login");
         return;
@@ -54,7 +55,7 @@ const Dashboard = () => {
 
       const response = await axios.get(apiUrl, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: bearerToken,
           Accept: "application/json",
           "Content-Type": "application/json",
         },

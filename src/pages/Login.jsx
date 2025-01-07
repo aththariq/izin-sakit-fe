@@ -65,8 +65,9 @@ const Login = () => {
         password: data.password,
       });
 
-      localStorage.setItem("token", response.data.token);
-      login(response.data.token);
+      const token = `Bearer ${response.data.token}`;
+      localStorage.setItem("token", token);
+      login(token);
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
