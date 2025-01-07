@@ -32,7 +32,7 @@ const Navbar = () => {
             </nav>
             <div className="flex items-center gap-4">
               <Link
-                to="/Login"
+                to="/login"
                 className="rounded-md bg-primer px-5 py-2.5 text-sm font-medium text-white shadow hover:bg-sekunder"
               >
                 <div className="flex items-center gap-2">

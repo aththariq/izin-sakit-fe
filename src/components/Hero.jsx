@@ -21,7 +21,7 @@ const Hero = () => {
           <div className="mt-7 grid gap-3 w-full sm:inline-flex">
             <Link
               className="py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-primer text-white hover:bg-sekunder focus:outline-none focus:bg-primer disabled:opacity-50 disabled:pointer-events-none"
-              to="/Login"
+              to="/login"
             >
               Ajukan Surat Sakit
               <svg

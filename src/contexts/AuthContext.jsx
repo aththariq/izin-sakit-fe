@@ -32,18 +32,6 @@ const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const checkAuth = async (token) => {
-    try {
-      const response = await axios.get(getApiUrl("/api/auth/check"), {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      // ...existing code...
-    } catch (error) {
-      // ...existing code...
-    }
-  };
 
   useEffect(() => {
     const validateToken = () => {
@@ -64,7 +52,7 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("token", token);
       setIsAuthenticated(true);
       // Redirect setelah login
-      window.location.href = redirectTo || "/Dashboard"; // Ganti dengan halaman yang sesuai
+      window.location.href = redirectTo || "/dashboard"; // Ganti dengan halaman yang sesuai
     } else {
       validateToken();
     }
