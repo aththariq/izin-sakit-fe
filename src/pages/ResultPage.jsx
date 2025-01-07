@@ -116,7 +116,7 @@ const ResultPage = () => {
     setLoadingEmail(true);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/generate-pdf/${formId}?email=${encodeURIComponent(email)}`,
+        getApiUrl(`/api/generate-pdf/${formId}?email=${encodeURIComponent(email)}`),
         { method: "GET" }
       );
       if (!response.ok) {

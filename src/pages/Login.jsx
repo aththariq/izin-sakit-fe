@@ -50,8 +50,8 @@ const Login = () => {
     if (token) {
       localStorage.setItem("token", token);
       login(token);
-      // Redirect ke halaman yang diminta atau ke Dashboard
-      navigate(location.state?.from || "/Dashboard", { replace: true });
+      // Redirect ke halaman yang diminta atau ke Dashboard tanpa case-sensitive
+      navigate(location.state?.from || "/dashboard", { replace: true });
     }
   }, [login, navigate, location.state?.from]);
 
@@ -71,7 +71,7 @@ const Login = () => {
       });
       console.log("Login berhasil, mengarahkan ke /Dashboard");
       login(response.data.token); // Pastikan ini dipanggil
-      navigate("/Dashboard"); // Pastikan ini dipanggil
+      navigate("/dashboard"); // Ubah menjadi lowercase
     } catch (error) {
       if (error.response?.status === 400) {
         setAlertInfo({

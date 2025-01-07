@@ -1,5 +1,6 @@
 // AuthContext.js
 import React, { createContext, useState, useEffect, useCallback } from "react";
+import { getApiUrl } from "@/utils/api";
 
 export const AuthContext = createContext();
 
@@ -30,6 +31,19 @@ const AuthProvider = ({ children }) => {
       console.error("Error during logout:", error);
     }
   }, []);
+
+  const checkAuth = async (token) => {
+    try {
+      const response = await axios.get(getApiUrl("/api/auth/check"), {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      // ...existing code...
+    } catch (error) {
+      // ...existing code...
+    }
+  };
 
   useEffect(() => {
     const validateToken = () => {
