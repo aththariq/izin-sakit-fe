@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "@/pages/LandingPages";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
@@ -28,7 +28,7 @@ const App = () => {
           <Route path="/form" element={<Forms />} />
           <Route path="/ai-questions" element={<AIQuestionsPage />} />
           <Route path="/result" element={<Result />} /> {/* Pastikan path ini benar */}
-          <Route path="*" element={<Error />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
     </Router>

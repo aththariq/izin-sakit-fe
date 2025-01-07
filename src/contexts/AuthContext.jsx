@@ -27,30 +27,38 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const validateAuth = () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        setIsAuthenticated(true);
-        console.log("Auth context: Valid token found");
-      } else {
+    const validateAuth = async () => {
+      try {
+        // Get token from URL or localStorage
+        const params = new URLSearchParams(window.location.search);
+        const urlToken = params.get("token");
+        const storedToken = localStorage.getItem("token");
+        
+        if (urlToken) {
+          // Save new token from URL
+          console.log("Found token in URL", urlToken);
+          const authToken = `Bearer ${urlToken}`;
+          localStorage.setItem("token", authToken);
+          setIsAuthenticated(true);
+          
+          // Clean URL
+          window.history.replaceState({}, document.title, "/dashboard");
+        } else if (storedToken) {
+          // Use existing token
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error("Auth validation error:", error);
         setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     validateAuth();
   }, []);
-
-  // Check URL parameters for token
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    if (token) {
-      login(token);
-      // Clean up URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, [login]);
 
   if (isLoading) {
     return <div>Loading...</div>;

@@ -21,15 +21,23 @@ const Dashboard = () => {
     const token = params.get("token");
 
     if (token) {
-      localStorage.setItem("token", token); // Remove extra 'Bearer'
-      login(token);
-      window.history.replaceState({}, document.title, window.location.pathname);
+      // Store token with Bearer prefix
+      const authToken = `Bearer ${token}`;
+      localStorage.setItem("token", authToken);
+      login(authToken);
+      
+      // Clean URL immediately
+      window.history.replaceState({}, document.title, "/dashboard");
     } else {
       const storedToken = localStorage.getItem("token");
       if (!storedToken) {
         navigate("/login");
+        return;
       }
     }
+
+    // Fetch data immediately after token check
+    fetchDashboardData();
   }, [navigate, login]);
 
   const fetchDashboardData = async () => {
