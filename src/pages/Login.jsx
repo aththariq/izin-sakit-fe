@@ -57,39 +57,31 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post(getApiUrl("/login"), {
+      const apiUrl = getApiUrl("/login");
+      console.log("Submitting to:", apiUrl); // Debug log
+
+      const response = await axios.post(apiUrl, {
         email: data.email,
         password: data.password,
       });
-      console.log(response.data);
-      localStorage.setItem("token", response.data.token); // Pastikan key-nya benar
-      localStorage.setItem("email", data.email);
 
-      setAlertInfo({
-        type: "success",
-        message: "Login berhasil! Selamat datang!",
-      });
-      console.log("Login berhasil, mengarahkan ke /Dashboard");
-      login(response.data.token); // Pastikan ini dipanggil
-      navigate("/dashboard"); // Ubah menjadi lowercase
+      localStorage.setItem("token", response.data.token);
+      login(response.data.token);
+      navigate("/dashboard");
     } catch (error) {
-      if (error.response?.status === 400) {
-        setAlertInfo({
-          type: "error",
-          message: "Akun ini sudah terdaftar. Gunakan email yang lain",
-        });
-      } else {
-        setAlertInfo({
-          type: "error",
-          message:
-            error.response?.data?.message || "Terjadi kesalahan saat login",
-        });
-      }
+      console.error("Login error:", error);
+      setAlertInfo({
+        type: "error",
+        message:
+          error.response?.data?.message || "Terjadi kesalahan saat login",
+      });
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = getApiUrl("/auth/google");
+    const apiUrl = getApiUrl("/auth/google");
+    console.log("Redirecting to Google OAuth:", apiUrl); // Debug log
+    window.location.href = apiUrl;
   };
 
   return (

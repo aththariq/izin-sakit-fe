@@ -1,17 +1,9 @@
 export const getApiUrl = (path) => {
-  const env = import.meta.env.VITE_ENV || "development";
-  const baseUrl = import.meta.env.VITE_API_URL;
+  // Hapus pengecekan env karena kita sudah set VITE_API_URL
+  const baseUrl = import.meta.env.VITE_API_URL || "https://api.izinsakit.site";
 
-  if (!baseUrl) {
-    console.warn("API URL tidak ditemukan di environment variables");
-    return env === "production"
-      ? `https://api.izinsakit.site${path}`
-      : `http://localhost:3000${path}`;
-  }
+  // Tambahkan logging untuk debug
+  console.log("Using API URL:", baseUrl);
 
   return `${baseUrl}${path}`;
-};
-
-export const getFrontendUrl = () => {
-  return import.meta.env.VITE_FRONTEND_URL || "http://localhost:5173";
 };
