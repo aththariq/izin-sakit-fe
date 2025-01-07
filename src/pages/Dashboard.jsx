@@ -21,11 +21,8 @@ const Dashboard = () => {
     const token = params.get("token");
 
     if (token) {
-      // Store token and set auth state
-      localStorage.setItem("token", `Bearer ${token}`);
+      localStorage.setItem("token", token); // Remove extra 'Bearer'
       login(token);
-      
-      // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     } else {
       const storedToken = localStorage.getItem("token");
