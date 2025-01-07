@@ -48,16 +48,34 @@ const Login = () => {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const token = urlSearchParams.get("token");
 
-    if (token) {
-      try {
-        localStorage.setItem("token", token);
-        login(token);
-        navigate("/dashboard", { replace: true });
-      } catch (error) {
-        console.error("Token processing error:", error);
-        navigate("/login");
+    const handleAuth = async () => {
+      if (token) {
+        try {
+          console.log("Found token in URL", token);
+          // Simpan token
+          localStorage.setItem("token", token);
+          // Update auth context
+          await login(token);
+          console.log("Authentication successful");
+          // Gunakan replace true agar history browser bersih
+          navigate("/dashboard", { replace: true });
+        } catch (error) {
+          console.error("Auth error:", error);
+          setAlertInfo({
+            type: "error",
+            message: "Gagal memproses autentikasi",
+          });
+        }
+      } else {
+        // Cek jika sudah ada token tersimpan
+        const storedToken = localStorage.getItem("token");
+        if (storedToken) {
+          navigate("/dashboard", { replace: true });
+        }
       }
-    }
+    };
+
+    handleAuth();
   }, [login, navigate]);
 
   const onSubmit = async (data) => {
