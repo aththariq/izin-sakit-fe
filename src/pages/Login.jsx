@@ -79,8 +79,9 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
+    // Gunakan getApiUrl untuk mendapatkan URL yang benar
     const apiUrl = getApiUrl("/auth/google");
-    console.log("Redirecting to Google OAuth:", apiUrl); // Debug log
+    console.log("Redirecting to Google OAuth:", apiUrl);
     window.location.href = apiUrl;
   };
 
