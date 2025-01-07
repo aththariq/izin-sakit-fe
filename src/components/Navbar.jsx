@@ -2,10 +2,22 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { HiOutlineEnvelope } from "react-icons/hi2";
 import MegaMenu from "./MegaMenu"; // Import komponen MegaMenu
+import { motion } from "framer-motion";
 
 const Navbar = () => {
+  const navbarVariants = {
+    hidden: { opacity: 0, y: -100 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <header className="bg-white sticky top-0 z-50 shadow-sm">
+    <motion.header
+      className="bg-white sticky top-0 z-50 shadow-sm"
+      variants={navbarVariants}
+      initial="hidden"
+      animate="visible"
+      transition={{ duration: 0.8, ease: "easeOut" }}
+    >
       <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="md:flex md:items-center md:gap-12">
@@ -44,7 +56,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 };
 

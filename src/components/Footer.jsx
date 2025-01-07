@@ -1,13 +1,42 @@
 import React from "react";
 import { FaFacebook, FaInstagram, FaTwitter, FaLinkedin } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const Footer = () => {
+  const footerVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: i * 0.2 },
+    }),
+  };
+
   return (
-    <footer className="bg-white">
+    <motion.footer
+      className="bg-white"
+      variants={footerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+    >
       <div className="mx-auto max-w-screen-xl px-4 pb-6 pt-16 sm:px-6 lg:px-8 lg:pt-24">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Logo dan Deskripsi */}
-          <div className="lg:col-span-4">
+          <motion.div
+            className="lg:col-span-4"
+            variants={sectionVariants}
+            initial="hidden"
+            whileInView="visible"
+            custom={0}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <div className="flex justify-center sm:justify-start">
               <img src="/logo.png" alt="Izin Sakit Logo" className="h-12" />
             </div>
@@ -49,13 +78,20 @@ const Footer = () => {
                 <FaLinkedin size={24} />
               </a>
             </div>
-          </div>
+          </motion.div>
 
           {/* Spacing di tengah */}
           <div className="hidden lg:col-span-2 lg:block"></div>
 
           {/* Section Informasi */}
-          <div className="text-center sm:text-left lg:col-span-2">
+          <motion.div
+            className="text-center sm:text-left lg:col-span-2"
+            variants={sectionVariants}
+            initial="hidden"
+            whileInView="visible"
+            custom={1}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <p className="text-lg font-medium text-primer">Informasi</p>
             <ul className="mt-8 space-y-4 text-sm">
               <li>
@@ -71,10 +107,17 @@ const Footer = () => {
                 <span className="text-gray-700">Panduan Pengguna</span>
               </li>
             </ul>
-          </div>
+          </motion.div>
 
           {/* Services */}
-          <div className="text-center sm:text-left lg:col-span-2">
+          <motion.div
+            className="text-center sm:text-left lg:col-span-2"
+            variants={sectionVariants}
+            initial="hidden"
+            whileInView="visible"
+            custom={2}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <p className="text-lg font-medium text-primer">Services</p>
             <ul className="mt-8 space-y-4 text-sm">
               <li>
@@ -90,10 +133,17 @@ const Footer = () => {
                 <span className="text-gray-700">Konsultasi Kesehatan</span>
               </li>
             </ul>
-          </div>
+          </motion.div>
 
           {/* Kontak */}
-          <div className="text-center sm:text-left lg:col-span-2">
+          <motion.div
+            className="text-center sm:text-left lg:col-span-2"
+            variants={sectionVariants}
+            initial="hidden"
+            whileInView="visible"
+            custom={3}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <p className="text-lg font-medium text-primer">Kontak</p>
             <ul className="mt-8 space-y-4 text-sm">
               <li>
@@ -108,7 +158,7 @@ const Footer = () => {
                 </address>
               </li>
             </ul>
-          </div>
+          </motion.div>
         </div>
 
         {/* Footer Bawah */}
@@ -118,7 +168,7 @@ const Footer = () => {
           </p>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };
 

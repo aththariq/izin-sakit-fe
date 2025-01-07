@@ -1,80 +1,85 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 const Testimonials = () => {
-    // Data testimonial untuk platform "Izin Sakit"
-    const testimonials = [
-      {
-        name: "Andi Wijaya",
-        comment:
-          "Sangat membantu! Saya bisa mendapatkan surat sakit digital dengan cepat tanpa harus antri di rumah sakit. Prosesnya sangat mudah dan efisien.",
-        avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-        rating: 5,
-      },
-      {
-        name: "Siti Nurhaliza",
-        comment:
-          "Prosesnya mudah dan cepat. Surat sakit langsung terkirim ke email saya.",
-        avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-        rating: 4.5,
-      },
-      {
-        name: "Budi Santoso",
-        comment:
-          "Platform ini sangat berguna. Saya sedang tidak fit dan tidak bisa keluar rumah. Prosesnya mudah dan cepat.",
-        avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-        rating: 4,
-      },
-      {
-        name: "Dewi Lestari",
-        comment:
-          "Saya sangat puas dengan layanan ini. Surat sakit valid dan bisa digunakan untuk keperluan kantor. Prosesnya cepat tanpa hambatan.",
-        avatar: "https://randomuser.me/api/portraits/women/4.jpg",
-        rating: 5,
-      },
-      {
-        name: "Eko Prasetyo",
-        comment:
-          "Cepat, praktis, dan efisien. Tidak perlu lagi repot ke dokter hanya untuk surat sakit.",
-        avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-        rating: 4.5,
-      },
-      {
-        name: "Rina Amelia",
-        comment:
-          "Layanan ini sangat membantu saya. Saya tidak perlu keluar rumah hanya untuk surat sakit. Prosesnya simpel dan cepat. Sangat direkomendasikan!",
-        avatar: "https://randomuser.me/api/portraits/women/6.jpg",
-        rating: 4,
-      },
-      {
-        name: "Fajar Nugraha",
-        comment:
-          "Saya sangat terkesan! Surat sakit bisa didapatkan dalam hitungan menit. Proses ini sangat cocok untuk orang-orang dengan jadwal yang padat seperti saya. Tidak hanya mudah, layanan ini juga memberikan solusi cepat tanpa harus mengorbankan waktu untuk pergi ke dokter hanya demi mendapatkan surat sakit. Sangat direkomendasikan untuk semua yang membutuhkan solusi praktis.",
-        avatar: "https://randomuser.me/api/portraits/men/7.jpg",
-        rating: 5,
-      },
-      {
-        name: "Lina Marlina",
-        comment:
-          "Prosesnya mudah dan surat sakit langsung dikirim ke email. Sangat membantu untuk kebutuhan kantor.",
-        avatar: "https://randomuser.me/api/portraits/women/8.jpg",
-        rating: 4.5,
-      },
-      {
-        name: "Agus Supriyadi",
-        comment:
-          "Tidak perlu lagi antri lama di rumah sakit. Proses cepat dan efisien. Sangat direkomendasikan! Saya awalnya ragu dengan layanan ini, tetapi setelah mencobanya, saya sangat puas. Surat sakitnya langsung diterima dan bisa saya gunakan untuk keperluan administrasi di kantor. Layanan ini sangat praktis dan benar-benar mempermudah hidup saya. Rasanya seperti memiliki asisten kesehatan digital yang selalu siap membantu kapan saja dan di mana saja.",
-        avatar: "https://randomuser.me/api/portraits/men/9.jpg",
-        rating: 5,
-      },
-      {
-        name: "Nurul Aini",
-        comment:
-          "Luar biasa! Saya tidak menyangka layanan ini akan semudah dan secepat ini. Dalam beberapa menit saja, saya sudah mendapatkan surat sakit yang langsung terkirim ke email. Ini benar-benar solusi modern yang sangat membantu, terutama bagi saya yang harus sering bepergian dan tidak punya waktu untuk antri di klinik atau rumah sakit. Sangat direkomendasikan untuk siapa pun yang membutuhkan proses yang cepat dan terpercaya.",
-        avatar: "https://randomuser.me/api/portraits/women/10.jpg",
-        rating: 5,
-      },
-    ];
+  // Data testimonial untuk platform "Izin Sakit"
+  const testimonials = [
+    {
+      name: "Andi Wijaya",
+      comment:
+        "Sangat membantu! Saya bisa mendapatkan surat sakit digital dengan cepat tanpa harus antri di rumah sakit. Prosesnya sangat mudah dan efisien.",
+      avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+      rating: 5,
+    },
+    {
+      name: "Siti Nurhaliza",
+      comment:
+        "Prosesnya mudah dan cepat. Surat sakit langsung terkirim ke email saya.",
+      avatar: "https://randomuser.me/api/portraits/women/2.jpg",
+      rating: 4.5,
+    },
+    {
+      name: "Budi Santoso",
+      comment:
+        "Platform ini sangat berguna. Saya sedang tidak fit dan tidak bisa keluar rumah. Prosesnya mudah dan cepat.",
+      avatar: "https://randomuser.me/api/portraits/men/3.jpg",
+      rating: 4,
+    },
+    {
+      name: "Dewi Lestari",
+      comment:
+        "Saya sangat puas dengan layanan ini. Surat sakit valid dan bisa digunakan untuk keperluan kantor. Prosesnya cepat tanpa hambatan.",
+      avatar: "https://randomuser.me/api/portraits/women/4.jpg",
+      rating: 5,
+    },
+    {
+      name: "Eko Prasetyo",
+      comment:
+        "Cepat, praktis, dan efisien. Tidak perlu lagi repot ke dokter hanya untuk surat sakit.",
+      avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+      rating: 4.5,
+    },
+    {
+      name: "Rina Amelia",
+      comment:
+        "Layanan ini sangat membantu saya. Saya tidak perlu keluar rumah hanya untuk surat sakit. Prosesnya simpel dan cepat. Sangat direkomendasikan!",
+      avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+      rating: 4,
+    },
+    {
+      name: "Fajar Nugraha",
+      comment:
+        "Saya sangat terkesan! Surat sakit bisa didapatkan dalam hitungan menit. Proses ini sangat cocok untuk orang-orang dengan jadwal yang padat seperti saya. Tidak hanya mudah, layanan ini juga memberikan solusi cepat tanpa harus mengorbankan waktu untuk pergi ke dokter hanya demi mendapatkan surat sakit. Sangat direkomendasikan untuk semua yang membutuhkan solusi praktis.",
+      avatar: "https://randomuser.me/api/portraits/men/7.jpg",
+      rating: 5,
+    },
+    {
+      name: "Lina Marlina",
+      comment:
+        "Prosesnya mudah dan surat sakit langsung dikirim ke email. Sangat membantu untuk kebutuhan kantor.",
+      avatar: "https://randomuser.me/api/portraits/women/8.jpg",
+      rating: 4.5,
+    },
+    {
+      name: "Agus Supriyadi",
+      comment:
+        "Tidak perlu lagi antri lama di rumah sakit. Proses cepat dan efisien. Sangat direkomendasikan! Saya awalnya ragu dengan layanan ini, tetapi setelah mencobanya, saya sangat puas. Surat sakitnya langsung diterima dan bisa saya gunakan untuk keperluan administrasi di kantor. Layanan ini sangat praktis dan benar-benar mempermudah hidup saya. Rasanya seperti memiliki asisten kesehatan digital yang selalu siap membantu kapan saja dan di mana saja.",
+      avatar: "https://randomuser.me/api/portraits/men/9.jpg",
+      rating: 5,
+    },
+    {
+      name: "Nurul Aini",
+      comment:
+        "Luar biasa! Saya tidak menyangka layanan ini akan semudah dan secepat ini. Dalam beberapa menit saja, saya sudah mendapatkan surat sakit yang langsung terkirim ke email. Ini benar-benar solusi modern yang sangat membantu, terutama bagi saya yang harus sering bepergian dan tidak punya waktu untuk antri di klinik atau rumah sakit. Sangat direkomendasikan untuk siapa pun yang membutuhkan proses yang cepat dan terpercaya.",
+      avatar: "https://randomuser.me/api/portraits/women/10.jpg",
+      rating: 5,
+    },
+  ];
 
+  const testimonialVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+  };
 
   // Fungsi untuk menampilkan bintang berdasarkan rating
   const renderStars = (rating) => {
@@ -135,7 +140,15 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="bg-white">
+    <motion.section
+      className="bg-white"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={{
+        visible: { transition: { staggerChildren: 0.2 } },
+      }}
+    >
       <div className="mx-auto max-w-screen-xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <h2 className="text-center text-3xl font-bold tracking-tight text-primer sm:text-4xl">
           Apa Kata Pengguna Izin Sakit?
@@ -143,7 +156,11 @@ const Testimonials = () => {
         <p className="mt-2 text-center text-gray-400 pb-5">Dengarkan pengalaman mereka yang telah merasakan kemudahan layanan kami.</p>
         <div className="mt-8 [column-fill:_balance] sm:columns-2 sm:gap-6 lg:columns-3 lg:gap-8">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="mb-8 sm:break-inside-avoid">
+            <motion.div
+              key={index}
+              className="mb-8 sm:break-inside-avoid"
+              variants={testimonialVariants}
+            >
               <blockquote className="rounded-lg bg-gray-50 p-6 shadow-sm sm:p-8">
                 <div className="flex items-center gap-4">
                   <img
@@ -162,11 +179,11 @@ const Testimonials = () => {
 
                 <p className="mt-4 text-gray-700">{testimonial.comment}</p>
               </blockquote>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

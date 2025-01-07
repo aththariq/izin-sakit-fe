@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const FaQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -11,18 +12,50 @@ const FaQ = () => {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1, 
+      transition: { 
+        duration: 0.8,
+        staggerChildren: 0.2 
+      } 
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="bg-gray-50">
+    <motion.div
+      className="bg-gray-50"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={{
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { duration: 0.8 } },
+      }}
+    >
       <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         {/* Grid */}
         <div className="grid md:grid-cols-5 gap-10">
           <div className="md:col-span-2">
             <div className="max-w-xs">
-              <h2 className="text-2xl font-bold md:text-4xl md:leading-tight text-primer">
+              <motion.h2
+                className="text-2xl font-bold md:text-4xl md:leading-tight text-primer"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={itemVariants}
+                transition={{ duration: 0.6 }}
+              >
                 Pertanyaan yang
                 <br />
                 sering diajukan
-              </h2>
+              </motion.h2>
               <p className="mt-1 hidden md:block text-gray-500">
                 Jawaban atas pertanyaan yang paling sering diajukan pengguna kami.
               </p>
@@ -32,7 +65,13 @@ const FaQ = () => {
 
           <div className="md:col-span-3">
             {/* Accordion */}
-            <div className="divide-y divide-gray-200">
+            <motion.div
+              className="divide-y divide-gray-200"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               {[
                 {
                   question: "Apakah surat sakit yang diterbitkan valid?",
@@ -60,11 +99,12 @@ const FaQ = () => {
                     "Ya, layanan Izin Sakit memiliki biaya yang terjangkau untuk setiap surat yang diterbitkan. Detail biaya akan ditampilkan sebelum Anda melanjutkan pengajuan.",
                 },
               ].map((item, index) => (
-                <div
+                <motion.div
                   key={index}
                   className={`py-3 w-full ${
                     activeIndex === index ? "shadow-primer" : ""
                   }`}
+                  variants={itemVariants}
                 >
                   <button
                     onClick={() => toggleAccordion(index)}
@@ -93,23 +133,28 @@ const FaQ = () => {
                       <path d="m6 9 6 6 6-6" />
                     </svg>
                   </button>
-                  <div
-                    className={`overflow-hidden transition-[height] duration-300 ${
-                      activeIndex === index ? "h-auto" : "h-0"
-                    }`}
-                  >
-                    <p className="text-gray-600 mt-2">{item.answer}</p>
-                  </div>
-                </div>
+                  <AnimatePresence>
+                    {activeIndex === index && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <p className="text-gray-600 mt-2">{item.answer}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
             {/* End Accordion */}
           </div>
           {/* End Col */}
         </div>
         {/* End Grid */}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

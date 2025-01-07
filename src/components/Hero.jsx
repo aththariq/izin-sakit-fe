@@ -1,27 +1,109 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaStar, FaGoogle, FaApple } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const Hero = () => {
+  const heroVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.3, // Controls the stagger delay between children
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
+  const titleVariants = {
+    hidden: { opacity: 0, x: -100 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
+  const textVariants = {
+    hidden: { opacity: 0, x: -100 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.5, delay: 0.2 },
+    },
+  };
+
+  const button1Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3 },
+    },
+  };
+
+  const button2Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3, delay: 0.3 },
+    },
+  };
+
+  const reviewsVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, delay: 0.6 }, // Adjusted delay for smoother appearance
+    },
+  };
+
   return (
-    <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 my-10">
+    <motion.div
+      className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 my-10"
+      variants={heroVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Grid */}
       <div className="grid md:grid-cols-2 gap-4 md:gap-8 xl:gap-20 md:items-center">
-        <div>
-          <h1 className="block text-3xl font-bold text-gray-800 sm:text-4xl lg:text-6xl lg:leading-tight">
+        <motion.div variants={itemVariants}>
+          <motion.h1
+            className="block text-3xl font-bold text-gray-800 sm:text-4xl lg:text-6xl lg:leading-tight"
+            variants={titleVariants}
+          >
             Dapatkan Surat Sakit dalam{" "}
             <span className="text-primer">Sekejap</span>
-          </h1>
-          <p className="mt-3 text-lg text-gray-800 dark:text-neutral-400">
+          </motion.h1>
+          <motion.p
+            className="mt-3 text-lg text-gray-800 dark:text-neutral-400"
+            variants={textVariants}
+          >
             Layanan berbasis AI untuk surat keterangan medis yang cepat,
             terpercaya, dan praktis.
-          </p>
+          </motion.p>
 
           {/* Buttons */}
-          <div className="mt-7 grid gap-3 w-full sm:inline-flex">
-            <Link
-              className="py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-primer text-white hover:bg-sekunder focus:outline-none focus:bg-primer disabled:opacity-50 disabled:pointer-events-none"
+          <motion.div
+            className="mt-7 grid gap-3 w-full sm:inline-flex"
+            variants={itemVariants}
+          >
+            <motion.Link
+              className="py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-primer text-white hover:bg-sekunder focus:outline-none focus:bg-primer disabled:opacity-50 disabled:pointer-events-none transform transition-all duration-300 hover:scale-105"
               to="/login"
+              variants={button1Variants}
             >
               Ajukan Surat Sakit
               <svg
@@ -38,18 +120,22 @@ const Hero = () => {
               >
                 <path d="m9 18 6-6-6-6" />
               </svg>
-            </Link>
-            <Link
-              className="py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-black text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none  "
+            </motion.Link>
+            <motion.Link
+              className="py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-black text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none transform transition-all duration-300 hover:scale-105"
               to="#"
+              variants={button2Variants}
             >
               Info Selengkapnya
-            </Link>
-          </div>
+            </motion.Link>
+          </motion.div>
           {/* End Buttons */}
 
           {/* Review */}
-          <div className="mt-6 lg:mt-10 grid grid-cols-2 max-w-md">
+          <motion.div
+            className="mt-6 lg:mt-10 grid grid-cols-2 max-w-md"
+            variants={reviewsVariants}
+          >
             {/* Review 1 */}
             <div className="py-5">
               <div className="flex items-center gap-x-2">
@@ -81,23 +167,23 @@ const Hero = () => {
                 <span className="font-bold">4.8</span> /5 - from 5k reviews
               </p>
             </div>
-          </div>
+          </motion.div>
           {/* End Review */}
-        </div>
+        </motion.div>
         {/* End Col */}
 
-        <div className="relative ms-4">
+        <motion.div variants={itemVariants} className="relative ms-4">
           <img
             className="w-full h-[600px] rounded-md object-cover drop-shadow-xl"
             src="https://images.pexels.com/photos/19471016/pexels-photo-19471016.jpeg"
             alt="Hero Image"
           />
           {/* End SVG*/}
-        </div>
+        </motion.div>
         {/* End Col */}
       </div>
       {/* End Grid */}
-    </div>
+    </motion.div>
   );
 };
 
