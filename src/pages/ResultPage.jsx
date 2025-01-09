@@ -162,7 +162,7 @@ const ResultPage = () => {
           `/api/generate-pdf/${formId}?email=${encodeURIComponent(email)}`
         ),
         {
-          method: "GET",
+          method: "POST",
           credentials: "include",
           headers: {
             Accept: "application/json",
