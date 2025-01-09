@@ -64,7 +64,7 @@ const SickLeaveForm = () => {
       sickReason: "", // Initialize sickReason
       otherReason: "", // Initialize otherReason
       gender: "", // Initialize gender
-      age: undefined, // Initialize age without a placeholder
+      age: 18, // Initialize age with a valid number (e.g., 18)
       contactEmail: "", // Initialize contactEmail
       phoneNumber: "", // Initialize phoneNumber
     },
@@ -80,6 +80,8 @@ const SickLeaveForm = () => {
         ...data,
         startDate: data.startDate.toISOString(), // Ensure ISO format
       };
+      
+      console.log("Formatted Data:", formattedData); // Debug log
 
       const response = await fetch(
         "https://api.izinsakit.site/api/sick-leave-form",
