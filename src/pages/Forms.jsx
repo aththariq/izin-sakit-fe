@@ -78,19 +78,24 @@ const SickLeaveForm = () => {
       // Ensure all necessary fields are included
       const formattedData = {
         ...data,
-        startDate: data.startDate.toISOString(), // Ensure ISO format
+        startDate: data.startDate.toISOString(),
       };
-      
-      console.log("Formatted Data:", formattedData); // Debug log
-
+      console.log("Data sebelum dikirim:", formattedData);
+      console.log("Tipe data fullName:", typeof formattedData.fullName);
       // Submit the form data to the backend
-      const response = await fetch("https://api.izinsakit.site/api/sick-leave-form", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formattedData),
-      });
+      const response = await fetch(
+        "https://api.izinsakit.site/api/sick-leave-form",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formattedData),
+        }
+      );
+
+      const responseData = await response.json();
+      console.log("Response dari server:", responseData);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -100,11 +105,11 @@ const SickLeaveForm = () => {
       const result = await response.json();
       console.log("Form submitted successfully:", result);
 
-      navigate("/ai-questions", { 
-        state: { 
+      navigate("/ai-questions", {
+        state: {
           formData: formattedData,
           formId: result.formId, // Pass formId if needed
-        } 
+        },
       });
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -358,6 +363,5 @@ const SickLeaveForm = () => {
     </div>
   );
 };
-
 
 export default SickLeaveForm;
