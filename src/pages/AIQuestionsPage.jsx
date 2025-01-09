@@ -128,6 +128,31 @@ const AIQuestionsPage = () => {
     }
   };
 
+  const onSubmit = async (data) => {
+    try {
+      // Format data before sending
+      const formattedData = {
+        ...data,
+        age: Number(data.age), // Ensure age is a number
+        startDate: new Date(data.startDate).toISOString(), // Ensure ISO format
+        contactEmail: data.contactEmail, // Include contactEmail
+        phoneNumber: data.phoneNumber, // Include phoneNumber
+      };
+      
+      console.log("Submitting data:", formattedData); // Debug log
+      
+      setIsLoading(true);
+      navigate("/ai-questions", { 
+        state: { 
+          formData: formattedData 
+        } 
+      });
+    } catch (error) {
+      console.error("Form submission error:", error);
+      alert("Error submitting form: " + error.message);
+    }
+  };
+
   return (
     <div className="h-screen flex justify-center items-center">
       <Card className="w-[600px]">

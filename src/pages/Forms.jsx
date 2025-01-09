@@ -57,7 +57,9 @@ const SickLeaveForm = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      age: '', // Initialize as empty string since input value starts as string
+      age: 0, // Initialize as number
+      contactEmail: '', // Initialize contactEmail
+      phoneNumber: '', // Initialize phoneNumber
     },
   });
   const navigate = useNavigate();
@@ -300,7 +302,7 @@ const SickLeaveForm = () => {
                 )}
               />
               {/* otherReason field conditional rendering */}
-              {form.watch("sickReason") === "other" && (
+              {form.watch("sickReason") === "Penjelasan lebih lanjut" && (
                 <FormField
                   name="otherReason"
                   control={form.control}
