@@ -57,9 +57,16 @@ const SickLeaveForm = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      age: 0, // Initialize as number
-      contactEmail: '', // Initialize contactEmail
-      phoneNumber: '', // Initialize phoneNumber
+      fullName: '',          // Initialize fullName
+      position: '',          // Initialize position
+      institution: '',       // Initialize institution
+      startDate: new Date(), // Initialize startDate with current date or appropriate default
+      sickReason: '',        // Initialize sickReason
+      otherReason: '',       // Initialize otherReason
+      gender: '',            // Initialize gender
+      age: undefined,        // Initialize age without a placeholder
+      contactEmail: '',      // Initialize contactEmail
+      phoneNumber: '',       // Initialize phoneNumber
     },
   });
   const navigate = useNavigate();
@@ -68,24 +75,34 @@ const SickLeaveForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Format data before sending
+      // Ensure all necessary fields are included
       const formattedData = {
         ...data,
-        age: Number(data.age), // Ensure age is a number
-        startDate: format(data.startDate, 'yyyy-MM-dd'), // Format date as string
+        startDate: data.startDate.toISOString(), // Ensure ISO format
       };
       
-      console.log("Submitting data:", formattedData); // Debug log
+      const response = await fetch("https://api.izinsakit.site/api/sick-leave-form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedData),
+      });
       
-      setIsLoading(true);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit form");
+      }
+      
+      const result = await response.json();
       navigate("/ai-questions", { 
         state: { 
           formData: formattedData 
         } 
       });
     } catch (error) {
-      console.error("Form submission error:", error);
-      alert("Error submitting form: " + error.message);
+      console.error("Error submitting form:", error);
+      alert(`Error: ${error.message}`);
     }
   };
 
@@ -220,7 +237,7 @@ const SickLeaveForm = () => {
                     <FormControl>
                       <Input 
                         type="number" 
-                        placeholder="Masukkan umur"
+                        placeholder="Masukkan umur" // Updated placeholder
                         {...field}
                         onChange={(e) => field.onChange(e.target.valueAsNumber)} // Use valueAsNumber
                       />
@@ -317,6 +334,7 @@ const SickLeaveForm = () => {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
+
                   )}
                 />
               )}
@@ -331,5 +349,7 @@ const SickLeaveForm = () => {
     </div>
   );
 };
+
+export default SickLeaveForm;
 
 export default SickLeaveForm;
