@@ -57,16 +57,16 @@ const SickLeaveForm = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: '',          // Initialize fullName
-      position: '',          // Initialize position
-      institution: '',       // Initialize institution
+      fullName: "", // Initialize fullName
+      position: "", // Initialize position
+      institution: "", // Initialize institution
       startDate: new Date(), // Initialize startDate with current date or appropriate default
-      sickReason: '',        // Initialize sickReason
-      otherReason: '',       // Initialize otherReason
-      gender: '',            // Initialize gender
-      age: undefined,        // Initialize age without a placeholder
-      contactEmail: '',      // Initialize contactEmail
-      phoneNumber: '',       // Initialize phoneNumber
+      sickReason: "", // Initialize sickReason
+      otherReason: "", // Initialize otherReason
+      gender: "", // Initialize gender
+      age: undefined, // Initialize age without a placeholder
+      contactEmail: "", // Initialize contactEmail
+      phoneNumber: "", // Initialize phoneNumber
     },
   });
   const navigate = useNavigate();
@@ -80,25 +80,28 @@ const SickLeaveForm = () => {
         ...data,
         startDate: data.startDate.toISOString(), // Ensure ISO format
       };
-      
-      const response = await fetch("https://api.izinsakit.site/api/sick-leave-form", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formattedData),
-      });
-      
+
+      const response = await fetch(
+        "https://api.izinsakit.site/api/sick-leave-form",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formattedData),
+        }
+      );
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to submit form");
       }
-      
+
       const result = await response.json();
-      navigate("/ai-questions", { 
-        state: { 
-          formData: formattedData 
-        } 
+      navigate("/ai-questions", {
+        state: {
+          formData: formattedData,
+        },
       });
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -235,8 +238,8 @@ const SickLeaveForm = () => {
                   <FormItem>
                     <FormLabel>Umur</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
+                      <Input
+                        type="number"
                         placeholder="Masukkan umur" // Updated placeholder
                         {...field}
                         onChange={(e) => field.onChange(e.target.valueAsNumber)} // Use valueAsNumber
@@ -310,8 +313,12 @@ const SickLeaveForm = () => {
                         <SelectItem value="Demam">Demam</SelectItem>
                         <SelectItem value="flu">Flu/Pilek</SelectItem>
                         <SelectItem value="Sakit Perut">Sakit Perut</SelectItem>
-                        <SelectItem value="Sakit Kepala">Sakit Kepala</SelectItem>
-                        <SelectItem value="Penjelasan lebih lanjut">Lainnya</SelectItem>
+                        <SelectItem value="Sakit Kepala">
+                          Sakit Kepala
+                        </SelectItem>
+                        <SelectItem value="Penjelasan lebih lanjut">
+                          Lainnya
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -334,7 +341,6 @@ const SickLeaveForm = () => {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-
                   )}
                 />
               )}
@@ -349,7 +355,5 @@ const SickLeaveForm = () => {
     </div>
   );
 };
-
-export default SickLeaveForm;
 
 export default SickLeaveForm;
