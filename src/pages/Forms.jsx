@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
-import { format } from "date-fns";
+import { format, startOfToday } from "date-fns"; // Added startOfToday
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -39,9 +39,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { getApiUrl } from "@/utils/api"; // Added import
 
 const formSchema = z.object({
-  fullName: z.string().min(1, { message: "Full Name is required" }),
+  fullName: z.string().min(1, { message: "Full Name is required" }), // Renamed from fullName
   position: z.string().min(1, { message: "Position is required" }),
   institution: z.string().min(1, { message: "Institution is required" }),
   startDate: z.date({ required_error: "Start Date is required" }),
@@ -57,14 +58,14 @@ const SickLeaveForm = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "", // Initialize fullName
+      fullName: "", // Renamed from fullName
       position: "", // Initialize position
       institution: "", // Initialize institution
-      startDate: new Date(), // Initialize startDate with current date or appropriate default
+      startDate: "",
       sickReason: "", // Initialize sickReason
       otherReason: "", // Initialize otherReason
       gender: "", // Initialize gender
-      age: "", // Initialize age with a valid number (e.g., 18)
+      age: "",
       contactEmail: "", // Initialize contactEmail
       phoneNumber: "", // Initialize phoneNumber
     },
@@ -74,46 +75,44 @@ const SickLeaveForm = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const onSubmit = async (data) => {
+    console.log("Form data before submission:", data);
     try {
-      // Ensure all necessary fields are included
-      const formattedData = {
-        ...data,
-        startDate: data.startDate.toISOString(),
-      };
-      console.log("Data sebelum dikirim:", formattedData);
-      console.log("Tipe data fullName:", typeof formattedData.fullName);
-      // Submit the form data to the backend
-      const response = await fetch(
-        "https://api.izinsakit.site/api/sick-leave-form",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formattedData),
-        }
-      );
-
-      const responseData = await response.json();
-      console.log("Response dari server:", responseData);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to submit form");
+      setIsLoading(true); // Show loading state
+      
+      // Validate data before formatting
+      if (!data.fullName?.trim()) {
+        throw new Error('Nama lengkap wajib diisi');
       }
 
-      const result = await response.json();
-      console.log("Form submitted successfully:", result);
+      // Format the data with validation
+      const formattedData = {
+        fullName: data.fullName?.trim(),
+        position: data.position?.trim(),
+        institution: data.institution?.trim(),
+        startDate: data.startDate instanceof Date ? data.startDate.toISOString() : null,
+        sickReason: data.sickReason?.trim(),
+        otherReason: data.otherReason?.trim() || '',
+        gender: data.gender,
+        age: Number(data.age) || 0,
+        contactEmail: data.contactEmail?.trim(),
+        phoneNumber: data.phoneNumber?.trim()
+      };
 
+      // Validate formatted data
+      console.log("Formatted data for submission:", formattedData);
+
+      // Navigate immediately without making the API call
       navigate("/ai-questions", {
         state: {
           formData: formattedData,
-          formId: result.formId, // Pass formId if needed
         },
       });
+
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Form submission error:", error);
       alert(`Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -131,7 +130,7 @@ const SickLeaveForm = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {/* fullName field */}
               <FormField
-                name="fullName"
+                name="fullName" // Renamed from fullName
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
@@ -294,7 +293,7 @@ const SickLeaveForm = () => {
                             field.onChange(date);
                             setIsDatePickerOpen(false);
                           }}
-                          disabled={(date) => date < new Date()}
+                          disabled={(date) => date < startOfToday()} // Updated condition
                           initialFocus
                         />
                       </PopoverContent>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Spin } from 'antd';
+import { Spin } from "antd";
 import {
   Card,
   CardContent,
@@ -24,7 +24,7 @@ const AIQuestionsPage = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       if (!location.state?.formData) {
-        navigate('/dashboard');
+        navigate("/dashboard");
         return;
       }
 
@@ -46,7 +46,7 @@ const AIQuestionsPage = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to submit form');
+          throw new Error(errorData.message || "Failed to submit form");
         }
 
         const result = await response.json();
@@ -58,7 +58,7 @@ const AIQuestionsPage = () => {
 
         setFormId(result.formId);
         setQuestions(result.questions || []);
-        
+
         // Initialize answers
         const initialAnswers = (result.questions || []).reduce((acc, q) => {
           acc[q.id] = "";
@@ -68,7 +68,7 @@ const AIQuestionsPage = () => {
       } catch (error) {
         console.error("Error fetching questions:", error);
         alert(`Error: ${error.message}`);
-        navigate('/dashboard');
+        navigate("/dashboard");
       } finally {
         setLoading(false);
       }
@@ -86,46 +86,45 @@ const AIQuestionsPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formId) {
-      console.error("No formId available");
-      alert("Error: Form ID tidak ditemukan");
+      console.error("FormId tidak tersedia");
+      alert("Error: Form ID tidak tersedia");
       return;
     }
 
-    try {
-      console.log("Submitting answers with formId:", formId); // Debug log
+    // Format payload
+    const payload = {
+      formId: formId.toString(),
+      answers: Object.entries(answers).map(([questionId, answer]) => ({
+        questionId: questionId.toString(),
+        answer: answer.toString(),
+      })),
+    };
 
+    console.log("Debug - Payload yang akan dikirim:", payload);
+
+    try {
       const response = await fetch(getApiUrl("/api/save-answers"), {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json"
+        headers: {
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          formId: formId,
-          answers: Object.entries(answers).map(([questionId, answer]) => ({
-            questionId,
-            answer
-          }))
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save answers');
+        throw new Error(errorData.message || "Gagal menyimpan jawaban");
       }
 
       const result = await response.json();
-      console.log("Save answers response:", result); // Debug log
-
-      // Navigasi dengan state yang benar
-      navigate("/result", { 
-        state: { formId },
-        replace: false // Ubah ke false agar bisa kembali
+      navigate("/result", {
+        state: { formId: result.formId },
       });
     } catch (error) {
-      console.error("Error saving answers:", error);
-      alert(`Terjadi kesalahan saat menyimpan jawaban: ${error.message}`);
+      console.error("Error saat menyimpan jawaban:", error);
+      alert(`Gagal menyimpan jawaban: ${error.message}`);
     }
   };
 
@@ -152,8 +151,8 @@ const AIQuestionsPage = () => {
                   />
                 </div>
               ))}
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full mt-4 bg-primer hover:bg-rose-700"
                 disabled={loading || !Object.keys(answers).length}
               >
