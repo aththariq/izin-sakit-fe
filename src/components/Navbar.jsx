@@ -45,7 +45,8 @@ const Navbar = () => {
             <div className="flex items-center gap-4">
               <Link
                 to="/login"
-                className="rounded-md bg-primer px-5 py-2.5 text-sm font-medium text-white shadow hover:bg-sekunder"
+                className="rounded-md bg-primer px-5 py-2.5 text-sm font-medium text-white shadow 
+  hover:bg-sekunder transition duration-300 transform hover:scale-105"
               >
                 <div className="flex items-center gap-2">
                   <span>Buat Surat</span>
