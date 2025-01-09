@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import CountUp from "react-countup"; // Import CountUp
 
@@ -7,6 +7,26 @@ const Stats = () => {
     hidden: { opacity: 0, scale: 0.8, y: 50 }, // Added y for slide-up
     visible: { opacity: 1, scale: 1, y: 0 },
   };
+
+  const countUpRef1 = useRef(null);
+  const countUpRef2 = useRef(null);
+  const countUpRef3 = useRef(null);
+  const countUpRef4 = useRef(null);
+
+  useEffect(() => {
+    if (countUpRef1.current) {
+      CountUp.start();
+    }
+    if (countUpRef2.current) {
+      CountUp.start();
+    }
+    if (countUpRef3.current) {
+      CountUp.start();
+    }
+    if (countUpRef4.current) {
+      CountUp.start();
+    }
+  }, []);
 
   return (
     <motion.div
@@ -22,7 +42,7 @@ const Stats = () => {
           {/* Stats */}
           <div className="lg:pe-6 xl:pe-12">
             <p className="text-6xl font-bold leading-10 text-primer">
-              <CountUp end={92} duration={2} suffix="%" />
+              <CountUp end={92} duration={2} suffix="%" ref={countUpRef1} />
               <span className="ms-1 inline-flex items-center gap-x-1 bg-gray-200 font-medium text-gray-800 text-xs leading-4 rounded-full py-0.5 px-2">
                 <svg
                   className="shrink-0 size-4"
@@ -34,7 +54,7 @@ const Stats = () => {
                 >
                   <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708z" />
                 </svg>
-                <CountUp end={7} duration={2} prefix="+" suffix="%" />
+                <CountUp end={7} duration={2} prefix="+" suffix="%" ref={countUpRef2} />
                 bulan ini
               </span>
             </p>
@@ -51,7 +71,7 @@ const Stats = () => {
           <div className="grid gap-6 grid-cols-2 md:grid-cols-4 lg:grid-cols-3 sm:gap-8">
             {/* Stats */}
             <div>
-              <CountUp end={99.95} decimals={2} suffix="%">
+              <CountUp end={99.95} decimals={2} suffix="%" ref={countUpRef3}>
                 {({ countUpRef }) => (
                   <p className="text-4xl font-bold text-primer" ref={countUpRef} />
                 )}
@@ -62,7 +82,7 @@ const Stats = () => {
 
             {/* Stats */}
             <div>
-              <CountUp end={2000} duration={2} suffix="+">
+              <CountUp end={2000} duration={2} suffix="+" ref={countUpRef4}>
                 {({ countUpRef }) => (
                   <p className="text-4xl font-bold text-primer" ref={countUpRef} />
                 )}
