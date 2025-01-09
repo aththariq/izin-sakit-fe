@@ -20,7 +20,7 @@ const Stats = () => {
         <div className="lg:col-span-4">
           <div className="lg:pe-6 xl:pe-12">
             <p className="text-6xl font-bold leading-10 text-primer">
-              <CountUp end={92} duration={2} suffix="%" enableScrollSpy />
+              <CountUp end={92} duration={2} suffix="%" />
               <span className="ms-1 inline-flex items-center gap-x-1 bg-gray-200 font-medium text-gray-800 text-xs leading-4 rounded-full py-0.5 px-2">
                 <svg
                   className="shrink-0 size-4"
@@ -37,7 +37,6 @@ const Stats = () => {
                   duration={2}
                   prefix="+"
                   suffix="%"
-                  enableScrollSpy
                 />
                 bulan ini
               </span>
@@ -53,21 +52,21 @@ const Stats = () => {
           <div className="grid gap-6 grid-cols-2 md:grid-cols-4 lg:grid-cols-3 sm:gap-8">
             <div>
               <p className="text-4xl font-bold text-primer">
-                <CountUp end={99.95} decimals={2} suffix="%" enableScrollSpy />
+                <CountUp end={99.95} decimals={2} suffix="%" />
               </p>
               <p className="mt-1 text-gray-500">tingkat kepuasan pengguna</p>
             </div>
 
             <div>
               <p className="text-4xl font-bold text-primer">
-                <CountUp end={2000} duration={2} suffix="+" enableScrollSpy />
+                <CountUp end={2000} duration={2} suffix="+" />
               </p>
               <p className="mt-1 text-gray-500">surat berhasil diproses</p>
             </div>
 
             <div>
               <p className="text-4xl font-bold text-primer">
-                <CountUp end={85} duration={2} suffix="%" enableScrollSpy />
+                <CountUp end={85} duration={2} suffix="%" />
               </p>
               <p className="mt-1 text-gray-500">
                 pelanggan menggunakan layanan kembali tahun ini

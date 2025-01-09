@@ -142,12 +142,6 @@ const Testimonials = () => {
   return (
     <motion.section
       className="bg-white"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={{
-        visible: { transition: { staggerChildren: 0.2 } },
-      }}
     >
       <div className="mx-auto max-w-screen-xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <h2 className="text-center text-3xl font-bold tracking-tight text-primer sm:text-4xl">
@@ -159,7 +153,11 @@ const Testimonials = () => {
             <motion.div
               key={index}
               className="mb-8 sm:break-inside-avoid"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
               variants={testimonialVariants}
+              transition={{ delay: index * 0.1 }} // Add delay based on index
             >
               <blockquote className="rounded-lg bg-gray-50 p-6 shadow-sm sm:p-8">
                 <div className="flex items-center gap-4">
