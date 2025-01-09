@@ -359,9 +359,5 @@ const SickLeaveForm = () => {
   );
 };
 
-export default SickLeaveForm;
-  );
-
-};
 
 export default SickLeaveForm;
