@@ -157,19 +157,15 @@ const ResultPage = () => {
 
     setLoadingEmail(true);
     try {
-      const response = await fetch(
-        getApiUrl(
-          `/api/generate-pdf/${formId}?email=${encodeURIComponent(email)}`
-        ),
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(getApiUrl(`/api/generate-pdf/${formId}`), {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
