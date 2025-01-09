@@ -32,7 +32,9 @@ const ResultPage = () => {
   const { formId, otherReason } = location.state; // Include otherReason from state
 
   // Add a base URL state
-  const [baseUrl, setBaseUrl] = useState(getApiUrl(`/api/generate-pdf/${formId}`));
+  const [baseUrl, setBaseUrl] = useState(
+    getApiUrl(`/api/generate-pdf/${formId}`)
+  );
 
   useEffect(() => {
     // Check if we have the required state
@@ -50,20 +52,45 @@ const ResultPage = () => {
 
     const loadPdfAndImage = async () => {
       try {
-        // Ensure PDF is generated
-        await fetch(`${getApiUrl(`/api/generate-pdf/${formId}`)}?otherReason=${encodeURIComponent(otherReason)}`, { method: "GET" });
-        
-        // Fetch the preview image
-        const response = await fetch(getApiUrl(`/api/convert-pdf-to-image/${formId}`), {
-          headers: { Accept: "image/png" },
-        });
-        if (!response.ok) throw new Error("Failed to generate image");
-        const blob = await response.blob();
+        const pdfResponse = await fetch(
+          `${getApiUrl(
+            `/api/generate-pdf/${formId}`
+          )}?otherReason=${encodeURIComponent(otherReason)}`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!pdfResponse.ok) throw new Error("Failed to generate PDF");
+
+        const imageResponse = await fetch(
+          getApiUrl(`/api/convert-pdf-to-image/${formId}`),
+          {
+            credentials: "include",
+            headers: {
+              Accept: "image/png",
+            },
+          }
+        );
+
+        if (!imageResponse.ok) throw new Error("Failed to generate image");
+
+        const blob = await imageResponse.blob();
         const url = URL.createObjectURL(blob);
         setPreviewImageUrl(url);
       } catch (error) {
-        console.error("Error loading preview:", error);
-        alert("Gagal memuat preview surat");
+        console.error("Error loading preview:", error); // Enhanced error logging
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.message || "Gagal memuat preview surat",
+          confirmButtonText: "OK",
+        });
       } finally {
         setLoading(false);
       }
@@ -79,27 +106,42 @@ const ResultPage = () => {
   const handleDownload = async (type) => {
     setLoadingDownload(true);
     try {
-      const url = type === 'pdf' ? getApiUrl(`/api/generate-pdf/${formId}`) : getApiUrl(`/api/convert-pdf-to-image/${formId}`);
-      const response = await fetch(url, { method: "GET" });
-      if (!response.ok) throw new Error(`Gagal mengunduh ${type === 'pdf' ? 'PDF' : 'gambar'}`);
+      const url =
+        type === "pdf"
+          ? getApiUrl(`/api/generate-pdf/${formId}`)
+          : getApiUrl(`/api/convert-pdf-to-image/${formId}`);
+
+      const response = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: type === "pdf" ? "application/pdf" : "image/png",
+        },
+      });
+
+      if (!response.ok)
+        throw new Error(`Gagal mengunduh ${type === "pdf" ? "PDF" : "gambar"}`);
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = downloadUrl;
-      a.download = type === 'pdf' ? "Surat_Izin_Sakit.pdf" : "Surat_Izin_Sakit.png";
+      a.download =
+        type === "pdf" ? "Surat_Izin_Sakit.pdf" : "Surat_Izin_Sakit.png";
       a.click();
       window.URL.revokeObjectURL(downloadUrl);
     } catch (error) {
       console.error(`Error downloading ${type}:`, error);
-      alert(`Terjadi kesalahan saat mengunduh ${type === 'pdf' ? 'PDF' : 'gambar'}`);
+      alert(
+        `Terjadi kesalahan saat mengunduh ${type === "pdf" ? "PDF" : "gambar"}`
+      );
     } finally {
       setLoadingDownload(false);
     }
   };
 
   // Update existing download handlers to use the generic handler
-  const handleDownloadPDF = () => handleDownload('pdf');
-  const handleDownloadImage = () => handleDownload('image');
+  const handleDownloadPDF = () => handleDownload("pdf");
+  const handleDownloadImage = () => handleDownload("image");
 
   // Add the handleSendEmail function
   const handleSendEmail = async () => {
@@ -116,13 +158,24 @@ const ResultPage = () => {
     setLoadingEmail(true);
     try {
       const response = await fetch(
-        getApiUrl(`/api/generate-pdf/${formId}?email=${encodeURIComponent(email)}`),
-        { method: "GET" }
+        getApiUrl(
+          `/api/generate-pdf/${formId}?email=${encodeURIComponent(email)}`
+        ),
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
       );
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to send email.");
       }
+
       const data = await response.json();
       Swal.fire({
         icon: "success",
