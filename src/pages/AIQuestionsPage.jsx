@@ -111,7 +111,8 @@ const AIQuestionsPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save answers');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save answers');
       }
 
       const result = await response.json();
@@ -125,31 +126,6 @@ const AIQuestionsPage = () => {
     } catch (error) {
       console.error("Error saving answers:", error);
       alert(`Terjadi kesalahan saat menyimpan jawaban: ${error.message}`);
-    }
-  };
-
-  const onSubmit = async (data) => {
-    try {
-      // Format data before sending
-      const formattedData = {
-        ...data,
-        age: Number(data.age), // Ensure age is a number
-        startDate: new Date(data.startDate).toISOString(), // Ensure ISO format
-        contactEmail: data.contactEmail, // Include contactEmail
-        phoneNumber: data.phoneNumber, // Include phoneNumber
-      };
-      
-      console.log("Submitting data:", formattedData); // Debug log
-      
-      setIsLoading(true);
-      navigate("/ai-questions", { 
-        state: { 
-          formData: formattedData 
-        } 
-      });
-    } catch (error) {
-      console.error("Form submission error:", error);
-      alert("Error submitting form: " + error.message);
     }
   };
 

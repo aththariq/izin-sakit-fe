@@ -64,7 +64,7 @@ const SickLeaveForm = () => {
       sickReason: "", // Initialize sickReason
       otherReason: "", // Initialize otherReason
       gender: "", // Initialize gender
-      age: 18, // Initialize age with a valid number (e.g., 18)
+      age: "", // Initialize age with a valid number (e.g., 18)
       contactEmail: "", // Initialize contactEmail
       phoneNumber: "", // Initialize phoneNumber
     },
@@ -83,16 +83,14 @@ const SickLeaveForm = () => {
       
       console.log("Formatted Data:", formattedData); // Debug log
 
-      const response = await fetch(
-        "https://api.izinsakit.site/api/sick-leave-form",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formattedData),
-        }
-      );
+      // Submit the form data to the backend
+      const response = await fetch("https://api.izinsakit.site/api/sick-leave-form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedData),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -100,10 +98,13 @@ const SickLeaveForm = () => {
       }
 
       const result = await response.json();
-      navigate("/ai-questions", {
-        state: {
+      console.log("Form submitted successfully:", result);
+
+      navigate("/ai-questions", { 
+        state: { 
           formData: formattedData,
-        },
+          formId: result.formId, // Pass formId if needed
+        } 
       });
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -356,6 +357,11 @@ const SickLeaveForm = () => {
       </Card>
     </div>
   );
+};
+
+export default SickLeaveForm;
+  );
+
 };
 
 export default SickLeaveForm;
