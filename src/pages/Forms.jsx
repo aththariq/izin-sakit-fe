@@ -73,8 +73,12 @@ const SickLeaveForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (data) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     console.log("Form data before submission:", data);
     try {
       setIsLoading(true); // Show loading state
@@ -113,6 +117,7 @@ const SickLeaveForm = () => {
       alert(`Error: ${error.message}`);
     } finally {
       setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -351,8 +356,8 @@ const SickLeaveForm = () => {
                   )}
                 />
               )}
-              <Button type="submit" className="w-full bg-primer">
-                Selanjutnya
+              <Button type="submit" className="w-full bg-primer" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Selanjutnya"}
               </Button>
             </form>
           </Form>

@@ -30,6 +30,9 @@ const ResultPage = () => {
   const [previewImageUrl, setPreviewImageUrl] = useState("");
   const [loading, setLoading] = useState(true);
   const { formId, otherReason } = location.state; // Include otherReason from state
+  const handleBookingClick = () => {
+    navigate(`/booking/${formId}`);
+  };
 
   // Add a base URL state
   const [baseUrl, setBaseUrl] = useState(
@@ -100,7 +103,7 @@ const ResultPage = () => {
     return () => {
       if (previewImageUrl) URL.revokeObjectURL(previewImageUrl);
     };
-  }, [formId, navigate, baseUrl, otherReason, location.state]);
+  }, [formId, navigate, otherReason]); // Remove unnecessary dependencies
 
   // Add a generic download handler
   const handleDownload = async (type) => {
@@ -263,12 +266,24 @@ const ResultPage = () => {
               </Button>
             </div>
           </div>
+          <Button
+            onClick={handleBookingClick}
+            className="mt-4 mb-4 w-full bg-primer"
+          >
+            Booking Ruang Isolasi
+          </Button>
           <div className="mb-2">
             <Button
               onClick={() => navigate("/dashboard")}
-              className="w-full bg-slate-400 hover:bg-slate-950"
+              className="w-full bg-gray-950 hover:bg-slate-400"
             >
               Kembali ke Dashboard
+            </Button>
+            <Button
+              onClick={handleBookingClick}
+              className="mt-4 mb-4 w-full bg-gray-500"
+            >
+              Booking Ruang Isolasi
             </Button>
           </div>
         </CardContent>

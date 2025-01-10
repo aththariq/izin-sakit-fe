@@ -20,13 +20,15 @@ const AIQuestionsPage = () => {
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
   const [formId, setFormId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+
     const fetchQuestions = async () => {
-      if (!location.state?.formData) {
-        navigate("/dashboard");
-        return;
-      }
+      if (isProcessing || !location.state?.formData) return;
+      setIsProcessing(true);
 
       try {
         const payload = {
@@ -56,26 +58,36 @@ const AIQuestionsPage = () => {
           throw new Error("No formId received from server");
         }
 
-        setFormId(result.formId);
-        setQuestions(result.questions || []);
+        if (mounted) {
+          setFormId(result.formId);
+          setQuestions(result.questions || []);
 
-        // Initialize answers
-        const initialAnswers = (result.questions || []).reduce((acc, q) => {
-          acc[q.id] = "";
-          return acc;
-        }, {});
-        setAnswers(initialAnswers);
+          // Initialize answers
+          const initialAnswers = (result.questions || []).reduce((acc, q) => {
+            acc[q.id] = "";
+            return acc;
+          }, {});
+          setAnswers(initialAnswers);
+        }
       } catch (error) {
         console.error("Error fetching questions:", error);
-        alert(`Error: ${error.message}`);
-        navigate("/dashboard");
+        if (mounted) {
+          alert(`Error: ${error.message}`);
+          navigate("/dashboard");
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchQuestions();
-  }, [location.state, navigate]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [location.state?.formData, navigate]);
 
   const handleAnswer = (questionId, value) => {
     setAnswers((prevAnswers) => ({
@@ -85,11 +97,14 @@ const AIQuestionsPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission
+    if (isSubmitting) return; // Add a flag to prevent multiple submissions
+    setIsSubmitting(true);
 
     if (!formId) {
       console.error("FormId tidak tersedia");
       alert("Error: Form ID tidak tersedia");
+      setIsSubmitting(false);
       return;
     }
 
@@ -125,6 +140,8 @@ const AIQuestionsPage = () => {
     } catch (error) {
       console.error("Error saat menyimpan jawaban:", error);
       alert(`Gagal menyimpan jawaban: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

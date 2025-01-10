@@ -84,7 +84,7 @@ const Dashboard = () => {
       const interval = setInterval(fetchDashboardData, 30000);
       return () => clearInterval(interval);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated]); // Ensure dependencies are correct
 
   if (loading) {
     return (

@@ -10,6 +10,7 @@ import Forms from "@/pages/Forms";
 import AIQuestionsPage from "@/pages/AIQuestionsPage";
 import Error from "@/pages/Error";
 import Result from "@/pages/ResultPage";
+import CoworkingBooking from "@/pages/CoworkingBooking";
 
 const App = () => {
   return (
@@ -27,7 +28,8 @@ const App = () => {
           <Route path="/form" element={<Forms />} />
           <Route path="/ai-questions" element={<AIQuestionsPage />} />
           <Route path="/result" element={<Result />} /> {/* Pastikan path ini benar */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Error/>} />
+          <Route path="/booking/:sickLeaveId" element={<CoworkingBooking />} />
         </Routes>
       </AuthProvider>
     </Router>
