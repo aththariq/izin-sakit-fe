@@ -18,76 +18,21 @@ const AIQuestionsPage = () => {
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Set default to false
   const [formId, setFormId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
 
+  // Initialize questions and formId from location.state
   useEffect(() => {
-    let mounted = true;
-
-    const fetchQuestions = async () => {
-      if (isProcessing || !location.state?.formData) return;
-      setIsProcessing(true);
-
-      try {
-        const payload = {
-          ...location.state.formData,
-          age: Number(location.state.formData.age), // Ensure age is a number
-        };
-
-        console.log("Sending payload:", payload); // Debug log
-
-        const response = await fetch(getApiUrl("/api/sick-leave-form"), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Failed to submit form");
-        }
-
-        const result = await response.json();
-        console.log("API Response:", result);
-
-        if (!result.formId) {
-          throw new Error("No formId received from server");
-        }
-
-        if (mounted) {
-          setFormId(result.formId);
-          setQuestions(result.questions || []);
-
-          // Initialize answers
-          const initialAnswers = (result.questions || []).reduce((acc, q) => {
-            acc[q.id] = "";
-            return acc;
-          }, {});
-          setAnswers(initialAnswers);
-        }
-      } catch (error) {
-        console.error("Error fetching questions:", error);
-        if (mounted) {
-          alert(`Error: ${error.message}`);
-          navigate("/dashboard");
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchQuestions();
-
-    return () => {
-      mounted = false;
-    };
-  }, [location.state?.formData, navigate]);
+    if (location.state && location.state.formId && location.state.questions) {
+      setFormId(location.state.formId);
+      setQuestions(location.state.questions);
+      setLoading(false); // Data sudah tersedia, tidak perlu loading
+    } else {
+      // Jika tidak ada data, redirect ke dashboard
+      navigate("/dashboard");
+    }
+  }, [location.state, navigate]);
 
   const handleAnswer = (questionId, value) => {
     setAnswers((prevAnswers) => ({
@@ -97,8 +42,8 @@ const AIQuestionsPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
-    if (isSubmitting) return; // Add a flag to prevent multiple submissions
+    e.preventDefault();
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     if (!formId) {
@@ -108,7 +53,6 @@ const AIQuestionsPage = () => {
       return;
     }
 
-    // Format payload
     const payload = {
       formId: formId.toString(),
       answers: Object.entries(answers).map(([questionId, answer]) => ({
@@ -120,10 +64,12 @@ const AIQuestionsPage = () => {
     console.log("Debug - Payload yang akan dikirim:", payload);
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(getApiUrl("/api/save-answers"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: token,
         },
         body: JSON.stringify(payload),
       });
@@ -173,7 +119,7 @@ const AIQuestionsPage = () => {
                 className="w-full mt-4 bg-primer hover:bg-rose-700"
                 disabled={loading || !Object.keys(answers).length}
               >
-                Simpan
+                {isSubmitting ? "Menyimpan..." : "Simpan"}
               </Button>
             </form>
           </Spin>

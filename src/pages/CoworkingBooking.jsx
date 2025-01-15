@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Tambahkan useEffect
 import { useParams, useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns"; // Import addDays
 import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
@@ -27,12 +27,31 @@ const CoworkingBooking = () => {
   const { sickLeaveId } = useParams();
   const navigate = useNavigate();
 
+  // Set default selectedDate ke besok saat komponen pertama kali di-render
+  useEffect(() => {
+    const today = new Date();
+    const tomorrow = addDays(today, 1); // Tambahkan 1 hari ke tanggal hari ini
+    setSelectedDate(tomorrow); // Set selectedDate ke besok
+  }, []);
+
+  // Fungsi untuk menonaktifkan tanggal hari ini dan sebelumnya
+  const isPastDate = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set waktu ke 00:00:00
+
+    const selectedDate = new Date(date);
+    selectedDate.setHours(0, 0, 0, 0); // Set waktu ke 00:00:00
+
+    // Nonaktifkan tanggal hari ini dan sebelumnya
+    return selectedDate <= today;
+  };
+
   const handleBooking = async () => {
     if (!selectedSeat || !selectedDate || !sickLeaveId) {
       Swal.fire({
-        icon: 'error',
-        title: 'Data Tidak Lengkap',
-        text: 'Mohon lengkapi semua data booking',
+        icon: "error",
+        title: "Data Tidak Lengkap",
+        text: "Mohon lengkapi semua data booking",
       });
       return;
     }
@@ -43,35 +62,53 @@ const CoworkingBooking = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           seat_number: selectedSeat,
           reservation_date: format(selectedDate, "yyyy-MM-dd"),
-          sickLeaveId: sickLeaveId
+          sickLeaveId: sickLeaveId,
         }),
       });
 
       const data = await response.json();
+      console.log("Response status:", response.status);
+      console.log("Response data:", data);
+
       if (!response.ok) {
         throw new Error(data.message || "Booking failed");
       }
 
+      // Alert saat booking berhasil
       await Swal.fire({
-        icon: 'success',
-        title: 'Booking Berhasil!',
-        text: 'Ruang isolasi berhasil dibooking',
-        showConfirmButton: false,
-        timer: 1500
+        icon: "success",
+        title: "Booking Berhasil!",
+        text: "Ruang isolasi berhasil dibooking",
+        showDenyButton: true, // Tombol "Kembali ke Dashboard"
+        showCancelButton: true, // Tombol "Tetap di Halaman"
+        confirmButtonText: "Kembali ke Dashboard",
+        denyButtonText: "Tetap di Halaman",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/dashboard"); // Kembali ke dashboard
+        } else if (result.isDenied) {
+          // Tetap di halaman ini
+        }
       });
-
-      navigate('/dashboard');
     } catch (error) {
       console.error("Error booking:", error);
+      // Alert saat booking gagal
       Swal.fire({
-        icon: 'error',
-        title: 'Booking Gagal',
+        icon: "error",
+        title: "Booking Gagal",
         text: error.message || "Gagal melakukan booking",
+        showDenyButton: true, // Tombol "Kembali ke Dashboard"
+        denyButtonText: "Kembali ke Dashboard",
+        confirmButtonText: "Coba Lagi",
+      }).then((result) => {
+        if (result.isDenied) {
+          navigate("/dashboard"); // Kembali ke dashboard
+        }
       });
     } finally {
       setIsLoading(false);
@@ -94,7 +131,7 @@ const CoworkingBooking = () => {
               mode="single"
               selected={selectedDate}
               onSelect={setSelectedDate}
-              disabled={(date) => date < new Date()}
+              disabled={(date) => isPastDate(date)} // Nonaktifkan tanggal hari ini dan sebelumnya
               className="rounded-md border"
             />
           </div>
@@ -109,25 +146,29 @@ const CoworkingBooking = () => {
                 <SelectItem value="section-a" disabled className="font-bold">
                   Ruangan A (Isolasi Mandiri)
                 </SelectItem>
-                {Array(20).fill().map((_, i) => (
-                  <SelectItem key={`A${i+1}`} value={`A${i+1}`}>
-                    Ruang A{i+1}
-                  </SelectItem>
-                ))}
+                {Array(20)
+                  .fill()
+                  .map((_, i) => (
+                    <SelectItem key={`A${i + 1}`} value={`A${i + 1}`}>
+                      Ruang A{i + 1}
+                    </SelectItem>
+                  ))}
                 <SelectItem value="section-b" disabled className="font-bold">
                   Ruangan B (Isolasi Medis)
                 </SelectItem>
-                {Array(20).fill().map((_, i) => (
-                  <SelectItem key={`B${i+1}`} value={`B${i+1}`}>
-                    Ruang B{i+1}
-                  </SelectItem>
-                ))}
+                {Array(20)
+                  .fill()
+                  .map((_, i) => (
+                    <SelectItem key={`B${i + 1}`} value={`B${i + 1}`}>
+                      Ruang B{i + 1}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
 
-          <Button 
-            className="w-full bg-primer" 
+          <Button
+            className="w-full bg-primer"
             onClick={handleBooking}
             disabled={isLoading || !selectedSeat}
           >

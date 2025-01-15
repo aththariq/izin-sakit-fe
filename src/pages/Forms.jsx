@@ -81,37 +81,50 @@ const SickLeaveForm = () => {
 
     console.log("Form data before submission:", data);
     try {
-      setIsLoading(true); // Show loading state
-      
-      // Validate data before formatting
-      if (!data.fullName?.trim()) {
-        throw new Error('Nama lengkap wajib diisi');
-      }
+      setIsLoading(true);
 
-      // Format the data with validation
+      // Format data
       const formattedData = {
         fullName: data.fullName?.trim(),
         position: data.position?.trim(),
         institution: data.institution?.trim(),
-        startDate: data.startDate instanceof Date ? data.startDate.toISOString() : null,
+        startDate:
+          data.startDate instanceof Date ? data.startDate.toISOString() : null,
         sickReason: data.sickReason?.trim(),
-        otherReason: data.otherReason?.trim() || '',
+        otherReason: data.otherReason?.trim() || "",
         gender: data.gender,
         age: Number(data.age) || 0,
         contactEmail: data.contactEmail?.trim(),
-        phoneNumber: data.phoneNumber?.trim()
+        phoneNumber: data.phoneNumber?.trim(),
       };
 
-      // Validate formatted data
-      console.log("Formatted data for submission:", formattedData);
+      // Kirim data ke backend
+      const token = localStorage.getItem("token");
+      const response = await fetch(getApiUrl("/api/sick-leave-form"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify(formattedData),
+      });
 
-      // Navigate immediately without making the API call
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit form");
+      }
+
+      const result = await response.json();
+      console.log("API Response:", result);
+
+      // Navigate ke AIQuestionsPage dengan formId dan pertanyaan
       navigate("/ai-questions", {
         state: {
           formData: formattedData,
+          formId: result.formId, // Teruskan formId ke AIQuestionsPage
+          questions: result.questions,
         },
       });
-
     } catch (error) {
       console.error("Form submission error:", error);
       alert(`Error: ${error.message}`);
@@ -356,7 +369,11 @@ const SickLeaveForm = () => {
                   )}
                 />
               )}
-              <Button type="submit" className="w-full bg-primer" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                className="w-full bg-primer"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? "Submitting..." : "Selanjutnya"}
               </Button>
             </form>

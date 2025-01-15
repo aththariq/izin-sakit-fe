@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"; // ShadCN Dropdown Menu
-import { Image, Spin, Button as AntButton } from "antd"; // Ant Design Image, Spin, and Button
+import { Image, Spin } from "antd"; // Ant Design Image and Spin
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import { getApiUrl } from "@/utils/api";
@@ -29,15 +29,11 @@ const ResultPage = () => {
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState("");
   const [loading, setLoading] = useState(true);
-  const { formId, otherReason } = location.state; // Include otherReason from state
+  const { formId } = location.state; // Ambil formId dari state
+
   const handleBookingClick = () => {
     navigate(`/booking/${formId}`);
   };
-
-  // Add a base URL state
-  const [baseUrl, setBaseUrl] = useState(
-    getApiUrl(`/api/generate-pdf/${formId}`)
-  );
 
   useEffect(() => {
     // Check if we have the required state
@@ -47,47 +43,48 @@ const ResultPage = () => {
       return;
     }
 
-    if (!formId) {
-      console.error("No formId in state");
-      navigate("/");
-      return;
-    }
-
     const loadPdfAndImage = async () => {
       try {
-        const pdfResponse = await fetch(
-          `${getApiUrl(
-            `/api/generate-pdf/${formId}`
-          )}?otherReason=${encodeURIComponent(otherReason)}`,
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Token tidak ditemukan. Silakan login kembali.");
+        }
+
+        // Pastikan token sudah mengandung "Bearer"
+        const authToken = token.startsWith("Bearer ")
+          ? token
+          : `Bearer ${token}`;
+
+        // Ambil URL PDF dan gambar
+        const response = await fetch(
+          getApiUrl(`/api/generate-pdf-and-image/${formId}`),
           {
             method: "GET",
-            credentials: "include",
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
+              Authorization: authToken, // Sertakan token di header
             },
           }
         );
 
-        if (!pdfResponse.ok) throw new Error("Failed to generate PDF");
+        if (!response.ok) {
+          throw new Error("Failed to generate PDF and image");
+        }
 
-        const imageResponse = await fetch(
-          getApiUrl(`/api/convert-pdf-to-image/${formId}`),
-          {
-            credentials: "include",
-            headers: {
-              Accept: "image/png",
-            },
-          }
-        );
+        const data = await response.json();
+        console.log("Data from server:", data);
 
-        if (!imageResponse.ok) throw new Error("Failed to generate image");
+        // Pastikan data.imageUrl ada dan valid
+        if (!data.imageUrl) {
+          throw new Error("URL gambar tidak ditemukan dalam respons server.");
+        }
 
-        const blob = await imageResponse.blob();
-        const url = URL.createObjectURL(blob);
-        setPreviewImageUrl(url);
+        // Muat gambar dengan token
+        const imageUrl = await loadImageWithAuth(getApiUrl(data.imageUrl));
+        setPreviewImageUrl(imageUrl);
       } catch (error) {
-        console.error("Error loading preview:", error); // Enhanced error logging
+        console.error("Error loading preview:", error);
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -100,25 +97,26 @@ const ResultPage = () => {
     };
 
     loadPdfAndImage();
-    return () => {
-      if (previewImageUrl) URL.revokeObjectURL(previewImageUrl);
-    };
-  }, [formId, navigate, otherReason]); // Remove unnecessary dependencies
+  }, [formId, navigate]);
 
   // Add a generic download handler
   const handleDownload = async (type) => {
     setLoadingDownload(true);
     try {
-      const url =
-        type === "pdf"
-          ? getApiUrl(`/api/generate-pdf/${formId}`)
-          : getApiUrl(`/api/convert-pdf-to-image/${formId}`);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token tidak ditemukan. Silakan login kembali.");
+      }
 
+      // Pastikan token sudah mengandung "Bearer"
+      const authToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+
+      const url = getApiUrl(`/api/download/${type}/${formId}`);
       const response = await fetch(url, {
         method: "GET",
-        credentials: "include",
         headers: {
           Accept: type === "pdf" ? "application/pdf" : "image/png",
+          Authorization: authToken, // Gunakan authToken yang sudah dipastikan mengandung "Bearer"
         },
       });
 
@@ -160,12 +158,20 @@ const ResultPage = () => {
 
     setLoadingEmail(true);
     try {
-      const response = await fetch(getApiUrl(`/api/generate-pdf/${formId}`), {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token tidak ditemukan. Silakan login kembali.");
+      }
+
+      // Pastikan token sudah mengandung "Bearer"
+      const authToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+
+      const response = await fetch(getApiUrl(`/api/send-pdf/${formId}`), {
         method: "POST",
-        credentials: "include",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          Authorization: authToken, // Gunakan authToken yang sudah dipastikan mengandung "Bearer"
         },
         body: JSON.stringify({ email }),
       });
@@ -199,6 +205,31 @@ const ResultPage = () => {
     } finally {
       setLoadingEmail(false);
     }
+  };
+
+  const loadImageWithAuth = async (url) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Token tidak ditemukan. Silakan login kembali.");
+    }
+
+    // Pastikan token sudah mengandung "Bearer"
+    const authToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+
+    // Ambil gambar sebagai blob
+    const response = await fetch(url, {
+      headers: {
+        Authorization: authToken, // Sertakan token di header
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Gagal memuat gambar");
+    }
+
+    // Konversi blob ke URL
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
   };
 
   return (
@@ -252,7 +283,7 @@ const ResultPage = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <Button
-                onClick={handleSendEmail} // Update onClick to handleSendEmail
+                onClick={handleSendEmail}
                 className="bg-primer hover:bg-rose-700"
                 disabled={loadingEmail}
               >
@@ -266,12 +297,6 @@ const ResultPage = () => {
               </Button>
             </div>
           </div>
-          <Button
-            onClick={handleBookingClick}
-            className="mt-4 mb-4 w-full bg-primer"
-          >
-            Booking Ruang Isolasi
-          </Button>
           <div className="mb-2">
             <Button
               onClick={() => navigate("/dashboard")}
